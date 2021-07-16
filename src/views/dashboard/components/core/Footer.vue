@@ -1,8 +1,13 @@
 <template>
   <v-footer id="dashboard-core-footer">
     <v-container>
-      <v-row align="center" no-gutters>
-        <v-col cols="12" align="center">
+      <v-row
+        align="center"
+        no-gutters
+      >
+        <v-col
+          cols="12"
+        >
           <div class="text-body-1 font-weight-light pt-6 pt-md-0 text-center">
             &copy; 2021 Chaingreen - All rights are reserved
           </div>
@@ -13,13 +18,13 @@
 </template>
 
 <script>
-export default {
-  name: "DashboardCoreFooter",
+  export default {
+    name: 'DashboardCoreFooter',
 
-  data: () => ({
-    links: []
-  })
-};
+    data: () => ({
+      links: [],
+    }),
+  }
 </script>
 
 <style lang="sass">

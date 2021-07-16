@@ -1,101 +1,137 @@
 <template>
-  <v-container id="regular-tables" fluid tag="section">
-    <v-col cols="12" md="12">
+  <v-container
+    id='regular-tables'
+    fluid
+    tag='section'
+  >
+    <v-col
+      cols='12'
+      md='12'
+    >
       <base-material-card
-        icon="mdi-clipboard-text"
-        title="Simple Table"
-        class="px-5 py-3"
+        icon='mdi-clipboard-text'
+        title='Simple Table'
+        class='px-5 py-3'
       >
         <!-- <template v-slot:heading>
-            <div class="text-h3 font-weight-light">
+            <div class='text-h3 font-weight-light'>
               Employees Stats
             </div>
 
-            <div class="text-subtitle-1 font-weight-light">
+            <div class='text-subtitle-1 font-weight-light'>
               New employees on 15th September, 2016
             </div>
           </template> -->
         <v-card-text>
-          <v-data-table :headers="headers" :items="items" />
+          <v-data-table
+            :headers='headers'
+            :items='items'
+            :footer-props="{
+              'items-per-page-options': [5, 10, 25, 50, -1]
+            }"
+            :items-per-page="25"
+          />
         </v-card-text>
       </base-material-card>
     </v-col>
   </v-container>
 </template>
 <script>
-export default {
-  name: "RegularTables",
+  export default {
+    name: 'RegularTables',
 
-  data() {
-    return {
-      headers: [
-        {
-          sortable: false,
-          text: "ID",
-          value: "id"
-        },
-        {
-          sortable: false,
-          text: "Name",
-          value: "name"
-        },
-        {
-          sortable: false,
-          text: "Salary",
-          value: "salary",
-          align: "right"
-        },
-        {
-          sortable: false,
-          text: "Country",
-          value: "country",
-          align: "right"
-        },
-        {
-          sortable: false,
-          text: "City",
-          value: "city",
-          align: "right"
-        }
-      ],
-      items: [
-        {
-          id: 1,
-          name: "Dakota Rice",
-          country: "Niger",
-          city: "Oud-Tunrhout",
-          salary: "$35,738"
-        },
-        {
-          id: 2,
-          name: "Minerva Hooper",
-          country: "Curaçao",
-          city: "Sinaai-Waas",
-          salary: "$23,738"
-        },
-        {
-          id: 3,
-          name: "Sage Rodriguez",
-          country: "Netherlands",
-          city: "Overland Park",
-          salary: "$56,142"
-        },
-        {
-          id: 4,
-          name: "Philip Chanley",
-          country: "Korea, South",
-          city: "Gloucester",
-          salary: "$38,735"
-        },
-        {
-          id: 5,
-          name: "Doris Greene",
-          country: "Malawi",
-          city: "Feldkirchen in Kārnten",
-          salary: "$63,542"
-        }
-      ]
-    };
+    data () {
+      return {
+        headers: [
+          {
+            sortable: false,
+            text: 'ID',
+            value: 'id',
+          },
+          {
+            sortable: false,
+            text: 'Date',
+            value: 'date',
+          },
+          {
+            sortable: false,
+            text: 'TX Type',
+            value: 'txtype',
+            align: 'right',
+          },
+          {
+            sortable: false,
+            text: 'Sender',
+            value: 'sender',
+            align: 'right',
+          },
+          {
+            sortable: false,
+            text: 'Reciever',
+            value: 'reciever',
+            align: 'right',
+          },
+          {
+            sortable: false,
+            text: 'Amount',
+            value: 'amount',
+            align: 'right',
+          },
+          {
+            sortable: false,
+            text: 'Confirmations',
+            value: 'confirmations',
+            align: 'right',
+          },
+        ],
+        items: [
+          {
+            id: 1,
+            date: 'Dakota Rice',
+            txtype: 'Niger',
+            sender: 'Oud-Tunrhout',
+            reciever: '$35,738',
+            amount: '100',
+            confirmations: '20',
+          },
+          {
+            id: 2,
+            date: 'Dakota Rice',
+            txtype: 'Niger',
+            sender: 'Oud-Tunrhout',
+            reciever: '$35,738',
+            amount: '100',
+            confirmations: '20',
+          },
+          {
+            id: 3,
+            date: 'Dakota Rice',
+            txtype: 'Niger',
+            sender: 'Oud-Tunrhout',
+            reciever: '$35,738',
+            amount: '100',
+            confirmations: '20',
+          },
+          {
+            id: 4,
+            date: 'Dakota Rice',
+            txtype: 'Niger',
+            sender: 'Oud-Tunrhout',
+            reciever: '$35,738',
+            amount: '100',
+            confirmations: '20',
+          },
+          {
+            id: 5,
+            date: 'Dakota Rice',
+            txtype: 'Niger',
+            sender: 'Oud-Tunrhout',
+            reciever: '$35,738',
+            amount: '100',
+            confirmations: '20',
+          },
+        ],
+      }
+    },
   }
-};
 </script>
