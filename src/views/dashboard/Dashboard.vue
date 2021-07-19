@@ -25,7 +25,7 @@
       >
         <base-material-stats-card
           color='info'
-          icon='mdi-poll'
+          icon='mdi-harddisk'
           title='Netspace'
           value='75.521'
         />
