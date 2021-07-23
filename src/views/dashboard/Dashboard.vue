@@ -14,7 +14,7 @@
           color='primary'
           icon='mdi-arrange-send-to-back'
           title='Last block'
-          value='+245'
+          :value='lastBlock'
         />
       </v-col>
 
@@ -27,7 +27,7 @@
           color='info'
           icon='mdi-harddisk'
           title='Netspace'
-          value='75.521'
+          :value='convertToPiB'
         />
       </v-col>
 
@@ -40,7 +40,7 @@
           color='#ff1744'
           icon='mdi-circle-multiple-outline'
           title='Circulating supply'
-          value='$ 34,245'
+          :value='sumCirculating'
         />
       </v-col>
 
@@ -196,21 +196,16 @@
             align: 'right',
           },
         ],
-        items: [
-          {
-            id: 1,
-            blockheight: 'Dakota Rice',
-            blockhash: 'Niger',
-            time: '$35,738',
-            numberoftransactions: '100',
-          },
-        ],
+        items: [],
         tabs: 0,
         tasks: {
           0: [],
           1: [],
           2: [],
         },
+        blockchain_state: {},
+        height: '',
+        space: '',
         list: {
           0: false,
           1: false,
@@ -219,10 +214,40 @@
       }
     },
 
+    computed: {
+      convertToPiB () {
+        return (this.space / 1125899906842620).toFixed(2) + ' PiB'
+      },
+      sumCirculating () {
+        return (this.lastBlock * 500) + ' CGN'
+      },
+      lastBlock () {
+        return this.height.toString()
+      },
+    },
+
     methods: {
       complete (index) {
         this.list[index] = !this.list[index]
       },
+    },
+    async mounted () {
+      const res = await this.axios.get('get_blocks', { params: { startHeight: 355903, endHeight: 355923 } }) // blocks
+      const req = await this.axios.get('get_blockchain_state') // blockchain state
+
+      // table data filled
+      res.data.blocks.forEach((b, index) => {
+        this.items.push({
+          id: index,
+          blockheight: b.reward_chain_block.height,
+          blockhash: b.header_hash,
+          time: b.foliage_transaction_block ? new Date(b.foliage_transaction_block?.timestamp).toString().slice(3, 24) : 'No time info',
+          numberoftransactions: b.transactions_info?.reward_claims_incorporated.length || '0',
+        })
+      })
+
+      this.height = req.data.blockchain_state.peak.height
+      this.space = req.data.blockchain_state.space
     },
   }
 </script>
