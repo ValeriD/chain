@@ -45,12 +45,6 @@
         },
         {
           sortable: false,
-          text: 'TX Type',
-          value: 'txtype',
-          align: 'right',
-        },
-        {
-          sortable: false,
           text: 'Sender',
           value: 'sender',
           align: 'right',
@@ -68,49 +62,22 @@
           align: 'right',
         },
       ],
-      items: [
-        {
-          id: 1,
-          date: 'Dakota Rice',
-          txtype: 'Niger',
-          sender: 'Oud-Tunrhout',
-          reciever: '$35,738',
-          amount: '100',
-        },
-        {
-          id: 2,
-          date: 'Dakota Rice',
-          txtype: 'Niger',
-          sender: 'Oud-Tunrhout',
-          reciever: '$35,738',
-          amount: '100',
-        },
-        {
-          id: 3,
-          date: 'Dakota Rice',
-          txtype: 'Niger',
-          sender: 'Oud-Tunrhout',
-          reciever: '$35,738',
-          amount: '100',
-        },
-        {
-          id: 4,
-          date: 'Dakota Rice',
-          txtype: 'Niger',
-          sender: 'Oud-Tunrhout',
-          reciever: '$35,738',
-          amount: '100',
-        },
-        {
-          id: 5,
-          date: 'Dakota Rice',
-          txtype: 'Niger',
-          sender: 'Oud-Tunrhout',
-          reciever: '$35,738',
-          amount: '100',
-        },
-      ],
+      items: [],
     }),
+    async mounted () {
+      const res = await this.axios.get('get_transactions', { params: { limit: 100, offset: 10 } }) // transactions
+
+      // table data filled
+      res.data.forEach((b, index) => {
+        this.items.push({
+          id: index,
+          date: new Date( b.created_at).toString().slice(3, 24),
+          sender: b.sender,
+          reciever: b.receiver,
+          amount: b.amount,
+        })
+      })
+    },
   }
 </script>
 
