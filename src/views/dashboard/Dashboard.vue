@@ -40,7 +40,7 @@
           color='#ff1744'
           icon='mdi-circle-multiple-outline'
           title='Circulating supply'
-          :value='sumCirculating'
+          :value='circulatingSupply'
         />
       </v-col>
 
@@ -53,7 +53,7 @@
           color='orange'
           icon='mdi-account-multiple-outline'
           title='Unique address count'
-          value='184'
+          :value='uniqueAddressCount'
         />
 <!--
           sub-icon='mdi-alert'
@@ -67,7 +67,7 @@
       >
         <base-material-card
           icon='mdi-clipboard-text'
-          title='Simple Table'
+          title='Blocks'
           class='px-5 py-3'
         >
           <!-- <template v-slot:heading>
@@ -218,9 +218,6 @@
       convertToPiB () {
         return (this.space / 1125899906842620).toFixed(2) + ' PiB'
       },
-      sumCirculating () {
-        return (this.lastBlock * 500) + ' CGN'
-      },
       lastBlock () {
         return this.height.toString()
       },
@@ -248,6 +245,8 @@
 
       this.height = req.data.blockchain_state.peak.height
       this.space = req.data.blockchain_state.space
+      this.circulatingSupply = req.data.blockchain_state.circulating_supply.toString().substring(0,9) + '...'
+      this.uniqueAddressCount = req.data.blockchain_state.unique_address_count
     },
   }
 </script>

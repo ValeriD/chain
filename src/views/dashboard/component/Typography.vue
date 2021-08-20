@@ -14,7 +14,7 @@
       >
         <base-material-card
           icon='mdi-clipboard-text'
-          title='Simple Table'
+          title='Transactions'
           class='px-5 py-3'
         >
           <v-card-text>

@@ -10,7 +10,7 @@
     >
       <base-material-card
         icon='mdi-clipboard-text'
-        title='Simple Table'
+        title='Addresses'
         class='px-5 py-3'
       >
         <!-- <template v-slot:heading>
@@ -50,88 +50,30 @@
           },
           {
             sortable: false,
-            text: 'Date',
-            value: 'date',
+            text: 'Address',
+            value: 'address',
           },
           {
             sortable: false,
-            text: 'TX Type',
-            value: 'txtype',
-            align: 'right',
-          },
-          {
-            sortable: false,
-            text: 'Sender',
-            value: 'sender',
-            align: 'right',
-          },
-          {
-            sortable: false,
-            text: 'Reciever',
-            value: 'reciever',
-            align: 'right',
-          },
-          {
-            sortable: false,
-            text: 'Amount',
-            value: 'amount',
-            align: 'right',
-          },
-          {
-            sortable: false,
-            text: 'Confirmations',
-            value: 'confirmations',
+            text: 'Balance',
+            value: 'balance',
             align: 'right',
           },
         ],
-        items: [
-          {
-            id: 1,
-            date: 'Dakota Rice',
-            txtype: 'Niger',
-            sender: 'Oud-Tunrhout',
-            reciever: '$35,738',
-            amount: '100',
-            confirmations: '20',
-          },
-          {
-            id: 2,
-            date: 'Dakota Rice',
-            txtype: 'Niger',
-            sender: 'Oud-Tunrhout',
-            reciever: '$35,738',
-            amount: '100',
-            confirmations: '20',
-          },
-          {
-            id: 3,
-            date: 'Dakota Rice',
-            txtype: 'Niger',
-            sender: 'Oud-Tunrhout',
-            reciever: '$35,738',
-            amount: '100',
-            confirmations: '20',
-          },
-          {
-            id: 4,
-            date: 'Dakota Rice',
-            txtype: 'Niger',
-            sender: 'Oud-Tunrhout',
-            reciever: '$35,738',
-            amount: '100',
-            confirmations: '20',
-          },
-          {
-            id: 5,
-            date: 'Dakota Rice',
-            txtype: 'Niger',
-            sender: 'Oud-Tunrhout',
-            reciever: '$35,738',
-            amount: '100',
-            confirmations: '20',
-          },
-        ],
+        items: [],
       }
+    },
+    async mounted () {
+      const res = await this.axios.get('get_addresses') // addresses
+
+      // table data filled
+      res.data.forEach((b, index) => {
+        this.items.push({
+          id: index,
+          address: b.address,
+          balance: b.current_balance,
+        })
+      })
     },
   }
 </script>
