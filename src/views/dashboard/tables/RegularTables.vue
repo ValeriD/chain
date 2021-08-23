@@ -4,6 +4,73 @@
     fluid
     tag='section'
   >
+  <h3>Address: {{ address }}</h3>
+  <v-row>
+      <v-col
+        cols='12'
+        sm='6'
+        lg='3'
+      >
+        <base-material-stats-card
+          color='info'
+          icon='mdi-scale-balance'
+          title='Current balance'
+          :value='balance'
+        />
+      </v-col>
+
+      <v-col
+        cols='12'
+        sm='6'
+        lg='3'
+      >
+        <base-material-stats-card
+          color='#ff1744'
+          icon='mdi-archive-arrow-up-outline'
+          title='Total sent'
+          :value='sent'
+        />
+      </v-col>
+
+      <v-col
+        cols='12'
+        sm='6'
+        lg='3'
+      >
+        <base-material-stats-card
+          color='primary'
+          icon='mdi-archive-arrow-down-outline'
+          title='Total recieved'
+          :value='recieved'
+        />
+      </v-col>
+
+      <v-col
+        cols='12'
+        sm='6'
+        lg='3'
+      >
+        <base-material-stats-card
+          color='purple'
+          icon='mdi-cached'
+          title='Number of transactions'
+          :value='notransactions'
+        />
+<!--
+          sub-icon='mdi-alert'
+          sub-icon-color='red'
+          sub-text='Get More Space...' -->
+      </v-col>
+
+      <v-col
+        cols='12'
+        md='12'
+      >
+      </v-col>
+    </v-row>
+
+
+
     <v-col
       cols='12'
       md='12'
@@ -29,6 +96,7 @@
             :footer-props="{
               'items-per-page-options': [5, 10, 25, 50, -1]
             }"
+            @click:row="handleClick"
             :items-per-page="25"
           />
         </v-card-text>
@@ -61,6 +129,20 @@
           },
         ],
         items: [],
+        balance: '',
+        sent: '',
+        recieved: '',
+        notransactions: ''
+      }
+    },
+    methods: {
+      async handleClick (e) {
+        const adr = await this.axios.get('get_address', { params: { address: e.address } }) // address
+        this.address = e.address
+        this.balance = adr.data.current_balance
+        this.sent = adr.data.total_sent
+        this.recieved = adr.data.total_received
+        this.notransactions = adr.data.number_of_transactions
       }
     },
     async mounted () {

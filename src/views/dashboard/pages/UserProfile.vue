@@ -227,7 +227,6 @@
       const req = await this.axios.get('get_transactions_per_day') // transactions per day
 
       setTimeout(() => {
-        console.log('timeout')
         this.netSpaceLabels = res.data.map(m => m._id)
         this.netSpaceSeries = res.data.map(m => m.max_netspace / 1125899906842620)
         this.maxTransactionsLabels = req.data.map(m => m._id)

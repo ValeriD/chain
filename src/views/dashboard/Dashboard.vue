@@ -229,7 +229,7 @@
       },
     },
     async mounted () {
-      const res = await this.axios.get('get_blocks', { params: { startHeight: 355903, endHeight: 355923 } }) // blocks
+      const res = await this.axios.get('get_blocks', { params: { start_height: 355903, end_height: 355923 } }) // blocks
       const req = await this.axios.get('get_blockchain_state') // blockchain state
 
       // table data filled
