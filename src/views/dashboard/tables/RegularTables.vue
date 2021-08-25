@@ -4,8 +4,8 @@
     fluid
     tag='section'
   >
-  <h3>Address: {{ address }}</h3>
-  <v-row>
+  <h3 v-if="address != ''">Address: {{ address }}</h3>
+  <v-row v-if="address != ''">
       <v-col
         cols='12'
         sm='6'
@@ -132,7 +132,8 @@
         balance: '',
         sent: '',
         recieved: '',
-        notransactions: ''
+        notransactions: '',
+        address: ''
       }
     },
     methods: {
@@ -146,7 +147,7 @@
       }
     },
     async mounted () {
-      const res = await this.axios.get('get_addresses') // addresses
+      const res = await this.axios.get('get_addresses', { params: { offset: 0 } }) // addresses
 
       // table data filled
       res.data.forEach((b, index) => {

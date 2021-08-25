@@ -61,15 +61,14 @@
             Max net space per day (PiB)
           </h4>
 
-          <!-- <p class='d-inline-flex font-weight-light ml-2 mt-1'>
+          <p class='d-inline-flex font-weight-light ml-2 mt-1'>
             <v-icon
-              color='green'
               small
             >
-              mdi-arrow-up
+              {{decreased ? 'mdi-arrow-up' : 'mdi-arrow-down'}}
             </v-icon>
-            <span class='green--text'>55%</span>&nbsp; increase in today's sales
-          </p> -->
+            <span :class="{ 'green--text': decreased, 'red--text' : !decreased }">{{increaseNetspace}}%</span>&nbsp; {{decreased ? 'increase' : 'decrease'}} in today's sales
+          </p>
 
           <template v-slot:actions>
             <v-icon
@@ -131,9 +130,14 @@
             Transactions per day
           </h4>
 
-          <!-- <p class='d-inline-flex font-weight-light ml-2 mt-1'>
-            Last Campaign Performance
-          </p> -->
+          <p class='d-inline-flex font-weight-light ml-2 mt-1'>
+            <v-icon
+              small
+            >
+              {{increased ? 'mdi-arrow-up' : 'mdi-arrow-down'}}
+            </v-icon>
+            <span :class="{ 'green--text': increased, 'red--text' : !increased }">{{increaseTrans}}%</span>&nbsp; {{increased ? 'increase' : 'decrease'}} in today's sales
+          </p>
 
           <template v-slot:actions>
             <v-icon
@@ -145,7 +149,7 @@
             <span
               class='text-caption grey--text font-weight-light'
             >
-            updated 10 minutes ago</span>
+            updated 10 minutes ago </span>
           </template>
         </base-material-chart-card>
       </v-col>
@@ -159,8 +163,8 @@
       return {
         emailsSubscriptionChart: {
           data: {
-            labels: this.maxTransactionsLabels,
-            series: [[this.maxTransactionsSeries]],
+            labels: [],
+            series: [[]],
           },
           options: {
             axisX: {
@@ -172,7 +176,7 @@
               top: 0,
               right: 5,
               bottom: 0,
-              left: 0,
+              left: 20,
             },
           },
           responsiveOptions: [
@@ -191,12 +195,12 @@
         },
         dailySalesChart: {
           data: {
-            labels: this.netSpaceLabels,
-            series: [[this.netSpaceSeries]],
+            labels: [],
+            series: [],
           },
           options: {
             lineSmooth: this.$chartist.Interpolation.cardinal({
-              tension: 0,
+              tension: 5,
             }),
             low: 0,
             high: this.maxNet, // creative tim: we recommend you to set the high sa the biggest value + something for a better look
@@ -204,39 +208,75 @@
               top: 0,
               right: 0,
               bottom: 0,
-              left: 0,
+              left: 20,
             },
           },
-        },  
+        },
         netSpaceLabels: [],
         netSpaceSeries: [],
         maxTransactionsLabels: [],
-        maxTransactionsSeries:[],
-        maxNet: 0,
-        maxTrans: 0,
+        maxTransactionsSeries: [],
+        increaseTrans: 0,
+        increaseNetspace: 0,
+        increased: false,
+        decreased: false
       }
     },
     computed: {
       netSpace () {
         return this.netSpaceLabels
-      }
+      },
     },
     async mounted () {
-      debugger;
       const res = await this.axios.get('get_nespace_per_day') // netspace per day
       const req = await this.axios.get('get_transactions_per_day') // transactions per day
+      const netSpaceLabels = res.data.map(m => m._id)
+      const netSpaceSeries = res.data.map(m => m.max_netspace / 1125899906842620)
+      const maxTransactionsLabels = req.data.map(m => m._id) || []
+      const maxTransactionsSeries = req.data.map(m => m.transactions_count) || []
+      const maxTrans = maxTransactionsSeries.slice(-2)
+      const maxNets = netSpaceSeries.slice(-2)
 
-      setTimeout(() => {
-        this.netSpaceLabels = res.data.map(m => m._id)
-        this.netSpaceSeries = res.data.map(m => m.max_netspace / 1125899906842620)
-        this.maxTransactionsLabels = req.data.map(m => m._id)
-        this.maxTransactionsSeries = req.data.map(m => m.transactions_count)
-        
-        const ncc = res.data.map(m => m.max_netspace / 1125899906842620) 
-        const mts = req.data.map(m => m.transactions_count)
-        this.maxNet = Math.max.apply(null, ncc) 
-        this.maxTrans = Math.max.apply(null, mts)
-    }, 3000)      
+      if(maxTrans[1] > maxTrans[0]){
+        this.increased = true
+        this.increaseTrans = ((maxTrans[0]-maxTrans[1])/100.0).toFixed(2)
+      }
+      else {
+        this.increased = false
+        this.increaseTrans = ((maxTrans[0]-maxTrans[1])/100.0).toFixed(2)
+      }
+      if(maxNets[1] > maxNets[0]){
+        this.decreased = true
+        this.increaseNetspace = ((maxNets[0]-maxNets[1])/100.0).toFixed(2)
+      }
+      else {
+        this.decreased = false
+        this.increaseNetspace = ((maxNets[0]-maxNets[1])/100.0).toFixed(2)
+      }
+      if (maxTransactionsLabels || maxTransactionsSeries) {
+        const chartData = {
+          labels: maxTransactionsLabels.slice(-10),
+          series: [maxTransactionsSeries.slice(-10)],
+        }
+        const chartData2 = {
+          labels: netSpaceLabels.slice(-10),
+          series: [netSpaceSeries.slice(-10)],
+        }
+        this.dailySalesChart = {
+          ...this.dailySalesChart,
+          data: chartData2,
+          options: {
+            ...this.dailySalesChart.options,
+          },
+        }
+        this.emailsSubscriptionChart = {
+          ...this.emailsSubscriptionChart,
+          data: chartData,
+          options: {
+            ...this.emailsSubscriptionChart.options,
+          },
+        }
+      }
     },
   }
 </script>
