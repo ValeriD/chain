@@ -136,19 +136,34 @@
         address: ''
       }
     },
+    computed: {
+      ...mapState(['searchResult']),
+    },
     methods: {
-      async handleClick (e) {
+      ...mapMutations({
+        setSearch: 'SET_SEARCH_RESULT'
+      }),
+      async handleClick (e, searchRes) {
+        if(searchRes.address) {
+          this.address = searchRes.address.address
+          this.balance = convertToInternationalCurrencySystem( searchRes.address.current_balance)
+          this.sent =  searchRes.address.total_sent
+          this.recieved = convertToInternationalCurrencySystem( searchRes.address.total_received)
+          this.notransactions =  searchRes.address.number_of_transactions
+          this.setSearch('')
+        }
         const adr = await this.axios.get('get_address', { params: { address: e.address } }) // address
         this.address = e.address
-        this.balance = adr.data.current_balance
+        this.balance = convertToInternationalCurrencySystem(adr.data.current_balance)
         this.sent = adr.data.total_sent
-        this.recieved = adr.data.total_received
+        this.recieved = convertToInternationalCurrencySystem(adr.data.total_received)
         this.notransactions = adr.data.number_of_transactions
       }
     },
     async mounted () {
-      const res = await this.axios.get('get_addresses', { params: { offset: 0 } }) // addresses
+      this.handleClick(false, this.searchResult)
 
+      const res = await this.axios.get('get_addresses', { params: { offset: 0 } }) // addresses
       // table data filled
       res.data.forEach((b, index) => {
         this.items.push({
@@ -159,4 +174,6 @@
       })
     },
   }
+  import { mapState, mapMutations } from 'vuex'
+  import { convertToInternationalCurrencySystem } from '../../dashboard/component/Typography.vue'
 </script>

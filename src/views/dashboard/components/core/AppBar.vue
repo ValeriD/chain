@@ -30,6 +30,7 @@
       label="Search by block height, block hash, address, transaction hash"
       color="secondary"
       hide-details
+      v-model="search"
     >
       <template
         v-if="$vuetify.breakpoint.mdAndUp"
@@ -40,6 +41,7 @@
           elevation="1"
           fab
           small
+          @click="searchAction"
         >
           <v-icon>mdi-magnify</v-icon>
         </v-btn>
@@ -110,7 +112,6 @@
 <script>
   // Utilities
   import { mapState, mapMutations } from 'vuex'
-
   export default {
     name: 'DashboardCoreAppBar',
 
@@ -132,6 +133,7 @@
         'Another Notification',
         'Another one',
       ],
+      search: ''
     }),
 
     computed: {
@@ -141,7 +143,18 @@
     methods: {
       ...mapMutations({
         setDrawer: 'SET_DRAWER',
+        setSearch: 'SET_SEARCH_RESULT'
       }),
+      async searchAction () {
+        const req = await this.axios.get('search', { params: { search_text: this.search }}) // search
+        if(req.data.transaction || req.data.block) {
+          this.$router.push({ path:'/components/typography' })
+        }
+        else if(req.data.address) {
+          this.$router.push({ path:'/tables/regular-tables' })
+        }
+        this.setSearch(req.data)
+      }
     },
   }
 </script>

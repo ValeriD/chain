@@ -163,7 +163,7 @@
 <script>
   export default {
     name: 'DashboardDashboard',
-
+  
     data () {
       return {
         headers: [
@@ -249,4 +249,6 @@
       this.uniqueAddressCount = req.data.blockchain_state.unique_address_count
     },
   }
+  // import { convertToInternationalCurrencySystem } from '../component/Typography.vue'
 </script>
+
