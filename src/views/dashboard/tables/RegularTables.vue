@@ -113,11 +113,6 @@
         headers: [
           {
             sortable: false,
-            text: 'ID',
-            value: 'id',
-          },
-          {
-            sortable: false,
             text: 'Address',
             value: 'address',
           },
@@ -146,16 +141,16 @@
       async handleClick (e, searchRes) {
         if(searchRes.address) {
           this.address = searchRes.address.address
-          this.balance = convertToInternationalCurrencySystem( searchRes.address.current_balance)
-          this.sent =  searchRes.address.total_sent
-          this.recieved = convertToInternationalCurrencySystem( searchRes.address.total_received)
+          this.balance = convertToInternationalCurrencySystem(searchRes.address.current_balance)
+          this.sent = convertToInternationalCurrencySystem(searchRes.address.total_sent)
+          this.recieved = convertToInternationalCurrencySystem(searchRes.address.total_received)
           this.notransactions =  searchRes.address.number_of_transactions
           this.setSearch('')
         }
         const adr = await this.axios.get('get_address', { params: { address: e.address } }) // address
         this.address = e.address
         this.balance = convertToInternationalCurrencySystem(adr.data.current_balance)
-        this.sent = adr.data.total_sent
+        this.sent = convertToInternationalCurrencySystem(adr.data.total_sent)
         this.recieved = convertToInternationalCurrencySystem(adr.data.total_received)
         this.notransactions = adr.data.number_of_transactions
       }
@@ -167,9 +162,8 @@
       // table data filled
       res.data.forEach((b, index) => {
         this.items.push({
-          id: index,
           address: b.address,
-          balance: b.current_balance,
+          balance: convertToInternationalCurrencySystem(b.current_balance),
         })
       })
     },

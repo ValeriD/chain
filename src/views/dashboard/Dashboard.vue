@@ -169,11 +169,6 @@
         headers: [
           {
             sortable: false,
-            text: 'ID',
-            value: 'id',
-          },
-          {
-            sortable: false,
             text: 'Block Height',
             value: 'blockheight',
           },
@@ -235,7 +230,6 @@
       // table data filled
       res.data.blocks.forEach((b, index) => {
         this.items.push({
-          id: index,
           blockheight: b.reward_chain_block.height,
           blockhash: b.header_hash,
           time: b.foliage_transaction_block ? new Date(b.foliage_transaction_block?.timestamp).toString().slice(3, 24) : 'No time info',
@@ -245,10 +239,10 @@
 
       this.height = req.data.blockchain_state.peak.height
       this.space = req.data.blockchain_state.space
-      this.circulatingSupply = req.data.blockchain_state.circulating_supply.toString().substring(0,9) + '...'
+      this.circulatingSupply = convertToInternationalCurrencySystem(req.data.blockchain_state.circulating_supply)
       this.uniqueAddressCount = req.data.blockchain_state.unique_address_count
     },
   }
-  // import { convertToInternationalCurrencySystem } from '../component/Typography.vue'
+  import { convertToInternationalCurrencySystem } from '../dashboard/component/Typography.vue'
 </script>
 

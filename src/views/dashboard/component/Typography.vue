@@ -245,11 +245,6 @@
       headers: [
         {
           sortable: false,
-          text: 'ID',
-          value: 'id',
-        },
-        {
-          sortable: false,
           text: 'Date',
           value: 'date',
         },
@@ -276,11 +271,6 @@
       headersInput: [
         {
           sortable: false,
-          text: 'ID',
-          value: 'id',
-        },
-        {
-          sortable: false,
           text: 'Input hash',
           value: 'inputhash',
         },
@@ -292,11 +282,6 @@
         }
       ],
       headersOutput: [
-        {
-          sortable: false,
-          text: 'ID',
-          value: 'id',
-        },
         {
           sortable: false,
           text: 'Output hash',
@@ -362,17 +347,15 @@
 
         if(adr.data.input) {
           this.itemsInput.push({
-            id: 0,
             inputhash: adr.data.input.puzzle_hash,
-            amount: adr.data.input.amount,
+            amount: convertToInternationalCurrencySystem(adr.data.input.amount),
           })
         }
         if(adr.data.outputs) {
           adr.data.outputs.forEach((b, index) => {
             this.itemsOutput.push({
-              id: index,
               outputhash: b.address,
-              amount: b.amount,
+              amount: convertToInternationalCurrencySystem(b.amount)
             })
           })
         }
@@ -387,34 +370,19 @@
       // table data filled
       res.data.forEach((b, index) => {
         this.items.push({
-          id: index,
           transaction_id: b.transaction_id,
           date: new Date( b.created_at).toString().slice(3, 24),
           sender: b.sender,
           reciever: b.receiver,
-          amount: b.amount,
+          amount: convertToInternationalCurrencySystem(b.amount),
         })
       })
     }
   }
   export function convertToInternationalCurrencySystem (labelValue) {
-
-        // Nine Zeroes for Billions
-        return Math.abs(Number(labelValue)) >= 1.0e+9
-
-        ? (Math.abs(Number(labelValue)) / 1.0e+9) + "B"
-        // Six Zeroes for Millions 
-        : Math.abs(Number(labelValue)) >= 1.0e+6
-
-        ? (Math.abs(Number(labelValue)) / 1.0e+6) + "M"
-        // Three Zeroes for Thousands
-        : Math.abs(Number(labelValue)) >= 1.0e+3
-
-        ? (Math.abs(Number(labelValue)) / 1.0e+3) + "K"
-
-        : Math.abs(Number(labelValue));
-
-      }
+        // 12 for Billions
+        return Number.parseFloat(labelValue / Math.pow(10, 12)).toFixed(2)  + ' B'
+  }
 </script>
 
 <style lang='scss'>
