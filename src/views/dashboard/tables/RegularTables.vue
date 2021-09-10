@@ -74,6 +74,7 @@
     <v-col
       cols='12'
       md='12'
+      v-if="address === ''"
     >
       <base-material-card
         icon='mdi-clipboard-text'
@@ -102,6 +103,28 @@
         </v-card-text>
       </base-material-card>
     </v-col>
+    <v-col
+      cols='12'
+      md='12'
+      v-else
+    >
+      <base-material-card
+        icon='mdi-clipboard-text'
+        title='Transactions'
+        class='px-5 py-3'
+      >
+        <v-card-text>
+          <v-data-table
+            :headers='headersTrans'
+            :items='itemsTrans'
+            :footer-props="{
+              'items-per-page-options': [5, 10, 25, 50, -1]
+            }"
+            :items-per-page="25"
+          />
+        </v-card-text>
+      </base-material-card>
+    </v-col>
   </v-container>
 </template>
 <script>
@@ -110,6 +133,37 @@
 
     data () {
       return {
+        headersTrans:[
+          {
+          sortable: false,
+          text: 'Date',
+          value: 'dateTrans',
+        },
+        {
+          sortable: false,
+          text: 'TX Type',
+          value: 'txtype',
+        },
+        {
+          sortable: false,
+          text: 'Sender',
+          value: 'senderTrans',
+          align: 'left',
+        },
+        {
+          sortable: false,
+          text: 'Reciever',
+          value: 'recieverTrans',
+          align: 'left',
+        },
+        {
+          sortable: false,
+          text: 'Amount',
+          value: 'amountTrans',
+          align: 'left',
+        },
+        ],
+        itemsTrans:[],
         headers: [
           {
             sortable: false,
@@ -145,9 +199,28 @@
           this.sent = convertToInternationalCurrencySystem(searchRes.address.total_sent)
           this.recieved = convertToInternationalCurrencySystem(searchRes.address.total_received)
           this.notransactions =  searchRes.address.number_of_transactions
+          searchRes.address.transactions.forEach((t, index) => {
+            this.itemsTrans.push({
+              dateTrans: new Date(t.transaction.created_at).toString().slice(3, 24),
+              txtype: t.transaction_type.charAt(0).toUpperCase() + t.transaction_type.slice(1),
+              senderTrans: t.transaction.sender,
+              recieverTrans: t.transaction.receiver,
+              amountTrans: convertToInternationalCurrencySystem(t.transaction.amount)
+            })
+          })
           this.setSearch('')
         }
+
         const adr = await this.axios.get('get_address', { params: { address: e.address } }) // address
+        adr.data.transactions.forEach((t, index) => {
+            this.itemsTrans.push({
+              dateTrans: new Date(t.transaction.created_at).toString().slice(3, 24),
+              txtype: t.transaction_type.charAt(0).toUpperCase() + t.transaction_type.slice(1),
+              senderTrans: t.transaction.sender,
+              recieverTrans: t.transaction.receiver,
+              amountTrans: convertToInternationalCurrencySystem(t.transaction.amount)
+            })
+          })
         this.address = e.address
         this.balance = convertToInternationalCurrencySystem(adr.data.current_balance)
         this.sent = convertToInternationalCurrencySystem(adr.data.total_sent)
