@@ -26,13 +26,11 @@
       <v-list-item>
         <v-list-item-avatar
           class='align-self-center'
-          color='white'
           contain
         >
-          <v-img
-            src='https://demos.creative-tim.com/vuetify-material-dashboard/favicon.ico'
-            max-height='30'
-          />
+        <img
+          :src='`favicon.jpg`'
+        >
         </v-list-item-avatar>
 
         <v-list-item-content>
