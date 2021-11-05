@@ -381,7 +381,7 @@
   }
   export function convertToInternationalCurrencySystem (labelValue) {
         // 12 for Billions
-        return Number.parseFloat(labelValue / Math.pow(10, 12)).toFixed(2)
+        return new Intl.NumberFormat().format(Number.parseInt(labelValue / Math.pow(10, 12)));
   }
 </script>
 

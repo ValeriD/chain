@@ -55,10 +55,6 @@
           title='Unique address count'
           :value='uniqueAddressCount'
         />
-<!--
-          sub-icon='mdi-alert'
-          sub-icon-color='red'
-          sub-text='Get More Space...' -->
       </v-col>
 
       <v-col
@@ -70,99 +66,25 @@
           title='Blocks'
           class='px-5 py-3'
         >
-          <!-- <template v-slot:heading>
-            <div class='text-h3 font-weight-light'>
-              Employees Stats
-            </div>
-
-            <div class='text-subtitle-1 font-weight-light'>
-              New employees on 15th September, 2016
-            </div>
-          </template> -->
           <v-card-text>
             <v-data-table
               :headers='headers'
               :items='items'
               :footer-props="{
-              'items-per-page-options': [5, 10, 25, 50, -1]
+              'items-per-page-options': [10, 20]
             }"
             :items-per-page="10"
             />
           </v-card-text>
         </base-material-card>
       </v-col>
-
-      <!-- <v-col cols='12' md='6'>
-        <base-material-card class='px-5 py-3'>
-          <template v-slot:heading>
-            <v-tabs
-              v-model='tabs'
-              background-color='transparent'
-              slider-color='white'
-            >
-              <span
-                class='subheading font-weight-light mx-3'
-                style='align-self: center'
-                >Tasks:</span
-              >
-              <v-tab class='mr-3'>
-                <v-icon class='mr-2'>
-                  mdi-bug
-                </v-icon>
-                Bugs
-              </v-tab>
-              <v-tab class='mr-3'>
-                <v-icon class='mr-2'>
-                  mdi-code-tags
-                </v-icon>
-                Website
-              </v-tab>
-              <v-tab>
-                <v-icon class='mr-2'>
-                  mdi-cloud
-                </v-icon>
-                Server
-              </v-tab>
-            </v-tabs>
-          </template>
-
-          <v-tabs-items v-model='tabs' class='transparent'>
-            <v-tab-item v-for='n in 3' :key='n'>
-              <v-card-text>
-                <template v-for='(task, i) in tasks[tabs]'>
-                  <v-row :key='i' align='center'>
-                    <v-col cols='1'>
-                      <v-list-item-action>
-                        <v-checkbox v-model='task.value' color='secondary' />
-                      </v-list-item-action>
-                    </v-col>
-
-                    <v-col cols='9'>
-                      <div class='font-weight-light' v-text='task.text' />
-                    </v-col>
-
-                    <v-col cols='2' class='text-right'>
-                      <v-icon class='mx-1'>
-                        mdi-pencil
-                      </v-icon>
-                      <v-icon color='error' class='mx-1'>
-                        mdi-close
-                      </v-icon>
-                    </v-col>
-                  </v-row>
-                </template>
-              </v-card-text>
-            </v-tab-item>
-          </v-tabs-items>
-        </base-material-card>
-      </v-col> -->
     </v-row>
   </v-container>
 </template>
 
 <script>
   export default {
-    name: 'DashboardDashboard',
+    name: 'Blocks',
   
     data () {
       return {
@@ -224,8 +146,8 @@
       },
     },
     async mounted () {
-      const res = await this.axios.get('get_blocks', { params: { start_height: 355903, end_height: 355923 } }) // blocks
       const req = await this.axios.get('get_blockchain_state') // blockchain state
+      const res = await this.axios.get('get_blocks', { params: { start_height: req.data.blockchain_state.peak.height-19, end_height: req.data.blockchain_state.peak.height+1 } }) // blocks
 
       // table data filled
       res.data.blocks.forEach((b, index) => {
@@ -236,13 +158,14 @@
           numberoftransactions: b.transactions_info?.reward_claims_incorporated.length || '0',
         })
       })
+      this.items.reverse();
 
-      this.height = req.data.blockchain_state.peak.height
+      this.height = new Intl.NumberFormat().format(req.data.blockchain_state.peak.height)
       this.space = req.data.blockchain_state.space
       this.circulatingSupply = convertToInternationalCurrencySystem(req.data.blockchain_state.circulating_supply)
-      this.uniqueAddressCount = req.data.blockchain_state.unique_address_count
+      this.uniqueAddressCount = new Intl.NumberFormat().format(req.data.blockchain_state.unique_address_count)
     },
   }
-  import { convertToInternationalCurrencySystem } from '../dashboard/component/Typography.vue'
+  import { convertToInternationalCurrencySystem } from './component/Typography.vue'
 </script>
 
