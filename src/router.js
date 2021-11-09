@@ -11,51 +11,35 @@ const router = new Router({
       path: '/',
       component: () => import('@/views/dashboard/Index'),
       children: [
-        // Dashboard
         {
           name: 'Home',
           path: '',
-          component: () => import('@/views/dashboard/Dashboard'),
+          component: () => import('@/views/dashboard/pages/Blocks'),
         },
-        // Pages
         {
           name: 'Charts',
-          path: 'pages/user',
-          component: () => import('@/views/dashboard/pages/UserProfile'),
+          path: '/pages/charts',
+          component: () => import('@/views/dashboard/pages/Charts'),
         },
-        // {
-        //   name: 'Notifications',
-        //   path: 'components/notifications',
-        //   component: () => import('@/views/dashboard/component/Notifications')
-        // },
-        // {
-        //   name: 'Icons',
-        //   path: 'components/icons',
-        //   component: () => import('@/views/dashboard/component/Icons')
-        // },
         {
           name: 'Transactions',
-          path: 'components/typography',
-          component: () => import('@/views/dashboard/component/Typography'),
+          path: 'pages/transactions',
+          component: () => import('@/views/dashboard/pages/Transactions'),
+          children: [
+            
+          ]
         },
-        // Tables
+        {
+          name: 'Transaction Details',
+          path: 'pages/transactions/details',
+          component: () => import('@/views/dashboard/pages/TransactionDetails'),
+        },
         {
           name: 'Adresses',
           path: 'tables/regular-tables',
           component: () => import('@/views/dashboard/tables/RegularTables'),
         },
-        // // Maps
-        // {
-        //   name: 'Google Maps',
-        //   path: 'maps/google-maps',
-        //   component: () => import('@/views/dashboard/maps/GoogleMaps')
-        // },
-        // // Upgrade
-        // {
-        //   name: 'Upgrade',
-        //   path: 'upgrade',
-        //   component: () => import('@/views/dashboard/Upgrade')
-        // }
+       
       ],
     },
   ],
