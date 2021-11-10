@@ -4,66 +4,7 @@
     fluid
     tag='section'
   >
-  <!-- <v-row v-if='isBlock === true'>
-      <v-col
-        cols='12'
-        sm='6'
-        lg='3'
-      >
-        <base-material-stats-card
-          color='green'
-          icon='mdi-arrange-send-to-back'
-          title='Block height'
-          :value='block_height'
-        />
-      </v-col>
-
-      <v-col
-        cols='12'
-        sm='6'
-        lg='3'
-      >
-        <base-material-stats-card
-        class="font-weight-light"
-          color='orange'
-          icon='mdi-clock-time-four-outline'
-          title='Date and time'
-          :value='dateandtime_block'
-        />
-      </v-col>
-
-      <v-col
-        cols='12'
-        sm='6'
-        lg='3'
-      >
-        <base-material-stats-card
-          color='green'
-          icon='mdi-circle-multiple-outline'
-          title='TX Amount'
-          :value='transaction_block'
-        />
-      </v-col>
-
-      <v-col
-        cols='12'
-        sm='6'
-        lg='3'
-      >
-        <base-material-stats-card
-          color='purple'
-          icon='mdi-cached'
-          title='Number of transactions'
-          :value='numberoftransactions_block'
-        />
-      </v-col>
-
-      <v-col
-        cols='12'
-        md='12'
-      >
-      </v-col>
-    </v-row> -->
+ 
     <v-row
       align='center'
       justify='center'
@@ -92,7 +33,7 @@
 
 <script>
   import { mapState, mapMutations } from 'vuex'
-import { convertToFormattedInteger } from '../../../scripts/functions'
+  import { convertToCurrency } from '../../../scripts/functions.js'
 
   export default {
     data: () => ({
@@ -122,11 +63,6 @@ import { convertToFormattedInteger } from '../../../scripts/functions'
         },
       ],
       items: [],
-      
-      // numberoftransactions_block: '',
-      // transaction_block: '',
-      // dateandtime_block: '',
-      // block_height: ''
     }),
      computed: {
       ...mapState(['searchResult']),
@@ -135,12 +71,9 @@ import { convertToFormattedInteger } from '../../../scripts/functions'
       ...mapMutations({
         setSearch: 'SET_SEARCH_RESULT'
       }),
-      async handleClick (e, searchRes) {
+      async handleClick (e) {
         this.$router.push({ path:'/pages/transactions/details', query:{id: e.transaction_id}})
       },
-      goBack () {
-        this.isInfo = !this.isInfo
-      }
     },
     async mounted () {
       await this.axios.get('get_transactions', { params: { limit: 100, offset: 0 } })
@@ -158,7 +91,6 @@ import { convertToFormattedInteger } from '../../../scripts/functions'
             .catch((e) => {console.log(e);})      
     }
   }
-  import { convertToCurrency } from '../../../scripts/functions.js'
  
 </script>
 

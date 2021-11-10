@@ -123,7 +123,7 @@
 
 <script>
     import { mapState, mapMutations} from 'vuex'
-    import { convertToCurrency } from "../../../scripts/functions"
+    import { convertToCurrency } from "../../../scripts/functions"  
     export default {
         data: () => ({
             headers_input: [
