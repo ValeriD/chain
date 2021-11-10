@@ -27,7 +27,7 @@
           color='info'
           icon='mdi-harddisk'
           title='Netspace'
-          :value='convertToPiB'
+          :value='space'
         />
       </v-col>
 
@@ -69,10 +69,12 @@
           <v-card-text>
             <v-data-table
               :headers='headers'
-              :items='items'
+              :items='items' 
+              
               :footer-props="{
               'items-per-page-options': [10, 20]
             }"
+            @click:row="handleClick"
             :items-per-page="10"
             />
           </v-card-text>
@@ -83,6 +85,8 @@
 </template>
 
 <script>
+  import { convertToCurrency } from '../../../scripts/functions.js'
+  import { convertSpace } from '../../../scripts/functions.js'
   export default {
     name: 'Blocks',
   
@@ -92,18 +96,18 @@
           {
             sortable: false,
             text: 'Block Height',
-            value: 'blockheight',
+            value: 'block_height',
           },
           {
             sortable: false,
             text: 'Block Hash',
-            value: 'blockhash',
+            value: 'block_hash',
             align: 'right',
           },
           {
             sortable: false,
             text: 'Number of transactions',
-            value: 'numberoftransactions',
+            value: 'number_of_transactions',
             align: 'right',
           },
           {
@@ -123,6 +127,8 @@
         blockchain_state: {},
         height: '',
         space: '',
+        circulatingSupply: '',
+        uniqueAddressCount: '',
         list: {
           0: false,
           1: false,
@@ -132,9 +138,6 @@
     },
 
     computed: {
-      convertToPiB () {
-        return (this.space / 1125899906842620).toFixed(2) + ' PiB'
-      },
       lastBlock () {
         return this.height.toString()
       },
@@ -144,28 +147,29 @@
       complete (index) {
         this.list[index] = !this.list[index]
       },
+      handleClick(e){
+        this.$router.push({path:'/pages/blocks/details', query: { block_hash: e.block_hash }})
+      }
     },
     async mounted () {
-      const req = await this.axios.get('get_blockchain_state') // blockchain state
-      const res = await this.axios.get('get_blocks', { params: { start_height: req.data.blockchain_state.peak.height-19, end_height: req.data.blockchain_state.peak.height+1 } }) // blocks
-
+      const blockchain_state = await this.axios.get('get_blockchain_state') // blockchain state
+      const blocks = await this.axios.get('get_blocks', { params: { start_height: blockchain_state.data.blockchain_state.peak.height-19, end_height: blockchain_state.data.blockchain_state.peak.height+1 } }) // blocks
       // table data filled
-      res.data.blocks.forEach((b, index) => {
+      blocks.data.blocks.forEach((b, index) => {
         this.items.push({
-          blockheight: b.reward_chain_block.height,
-          blockhash: b.header_hash,
-          time: b.foliage_transaction_block ? new Date(b.foliage_transaction_block?.timestamp).toString().slice(3, 24) : 'No time info',
-          numberoftransactions: b.transactions_info?.reward_claims_incorporated.length || '0',
+          block_height: b.reward_chain_block.height,
+          block_hash: b.header_hash,
+          time: b.foliage_transaction_block ? new Date(b.foliage_transaction_block?.timestamp*1000).toString().slice(3, 24) : 'No time info',
+          number_of_transactions: b.transactions_info?.reward_claims_incorporated.length || '0',
         })
       })
       this.items.reverse();
-
-      this.height = new Intl.NumberFormat().format(req.data.blockchain_state.peak.height)
-      this.space = req.data.blockchain_state.space
-      this.circulatingSupply = convertToInternationalCurrencySystem(req.data.blockchain_state.circulating_supply)
-      this.uniqueAddressCount = new Intl.NumberFormat().format(req.data.blockchain_state.unique_address_count)
+      console.log(this.space)
+      this.height = new Intl.NumberFormat().format(blockchain_state.data.blockchain_state.peak.height)
+      this.space = convertSpace(blockchain_state.data.blockchain_state.space)
+      this.circulatingSupply = convertToCurrency(blockchain_state.data.blockchain_state.circulating_supply)
+      this.uniqueAddressCount = new Intl.NumberFormat().format(blockchain_state.data.blockchain_state.unique_address_count)
     },
   }
-  import { convertToInternationalCurrencySystem } from './component/Typography.vue'
 </script>
 

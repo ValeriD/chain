@@ -95,7 +95,7 @@
           this.search = ''
 
         }else if(req.data.block){
-          this.$router.push({ path:'/pages/block'})
+          this.$router.push({ path:'/pages/blocks/details', query: {block_hash: this.search} })
           this.search = ''
 
         }

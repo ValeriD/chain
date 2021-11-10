@@ -17,6 +17,11 @@ const router = new Router({
           component: () => import('@/views/dashboard/pages/Blocks'),
         },
         {
+          name: 'Block Details',
+          path: '/pages/blocks/details',
+          component: () => import('@/views/dashboard/pages/BlockDetails')
+        },
+        {
           name: 'Charts',
           path: '/pages/charts',
           component: () => import('@/views/dashboard/pages/Charts'),
