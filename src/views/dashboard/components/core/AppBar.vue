@@ -50,62 +50,7 @@
 
     <div class="mx-3" />
 
-    <!-- <v-btn
-      class='ml-2'
-      min-width='0'
-      text
-      to='/'
-    >
-      <v-icon>mdi-view-dashboard</v-icon>
-    </v-btn> -->
-
-    <!-- <v-menu
-      bottom
-      left
-      offset-y
-      origin='top right'
-      transition='scale-transition'
-    >
-      <template v-slot:activator='{ attrs, on }'>
-        <v-btn
-          class='ml-2'
-          min-width='0'
-          text
-          v-bind='attrs'
-          v-on='on'
-        >
-          <v-badge
-            color='red'
-            overlap
-            bordered
-          >
-            <template v-slot:badge>
-              <span>5</span>
-            </template>
-
-            <v-icon>mdi-bell</v-icon>
-          </v-badge>
-        </v-btn>
-      </template>
-
-      <v-list
-        :tile='false'
-        nav
-      >
-        <div>
-          <app-bar-item
-            v-for='(n, i) in notifications'
-            :key='`item-${i}`'
-          >
-            <v-list-item-title v-text='n' />
-          </app-bar-item>
-        </div>
-      </v-list>
-    </v-menu> -->
-
-    <!-- <v-btn class='ml-2' min-width='0' text to='/pages/user'>
-      <v-icon>mdi-account</v-icon>
-    </v-btn> -->
+    
   </v-app-bar>
 </template>
 
@@ -126,13 +71,6 @@
     },
 
     data: () => ({
-      notifications: [
-        'Mike John Responded to your email',
-        'You have 5 new tasks',
-        'You\'re now friends with Andrew',
-        'Another Notification',
-        'Another one',
-      ],
       search: ''
     }),
 
@@ -147,11 +85,19 @@
       }),
       async searchAction () {
         const req = await this.axios.get('search', { params: { search_text: this.search }}) // search
-        if(req.data.transaction || req.data.block) {
-          this.$router.push({ path:'/components/typography' })
+        if(req.data.transaction ) {
+          this.$router.push({ path:'/pages/transactions/details' })
+          this.search = ''
+
         }
         else if(req.data.address) {
-          this.$router.push({ path:'/tables/regular-tables' })
+          this.$router.push({ path:'/addresses/details' })
+          this.search = ''
+
+        }else if(req.data.block){
+          this.$router.push({ path:'/pages/block'})
+          this.search = ''
+
         }
         this.setSearch(req.data)
       }

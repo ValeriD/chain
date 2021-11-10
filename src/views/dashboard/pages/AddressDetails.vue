@@ -1,0 +1,187 @@
+<template>
+  <v-container
+    id='address-details'
+    fluid
+    tag='section'
+  >
+    <v-row>
+        <v-chip
+        color="orange"
+        rounded
+        text-color="white"
+        align="left"
+        >
+        <div class="font-weight-regular display-1">Address: {{ address }}</div>
+        </v-chip>
+    </v-row>
+    <v-row>
+        <v-col
+            cols='12'
+            sm='6'
+            lg='3'
+        >
+            <base-material-stats-card
+            color='info'
+            icon='mdi-scale-balance'
+            title='Current balance'
+            :value='balance'
+            />
+        </v-col>
+
+        <v-col
+            cols='12'
+            sm='6'
+            lg='3'
+        >
+            <base-material-stats-card
+            color='#ff1744'
+            icon='mdi-archive-arrow-up-outline'
+            title='Total sent'
+            :value='sent'
+            />
+        </v-col>
+
+        <v-col
+            cols='12'
+            sm='6'
+            lg='3'
+        >
+            <base-material-stats-card
+            color='primary'
+            icon='mdi-archive-arrow-down-outline'
+            title='Total recieved'
+            :value='recieved'
+            />
+        </v-col>
+
+        <v-col
+            cols='12'
+            sm='6'
+            lg='3'
+        >
+            <base-material-stats-card
+            color='purple'
+            icon='mdi-cached'
+            title='Number of transactions'
+            :value='number_transactions'
+            />
+        </v-col>
+
+        <v-col
+            cols='12'
+            md='12'
+        >
+        </v-col>
+        </v-row>
+
+     <v-col
+      cols='12'
+      md='12'
+    >
+      <base-material-card
+        icon='mdi-clipboard-text'
+        title='Transactions'
+        class='px-5 py-3'
+      >
+        <v-card-text>
+          <v-data-table
+            :headers='headers_transactions'
+            :items='items_transactions'
+            :footer-props="{
+              'items-per-page-options': [5, 10, 25, 50, -1]
+            }"
+            :items-per-page="25"
+          />
+        </v-card-text>
+      </base-material-card>
+    </v-col>
+     </v-container>
+</template>   
+<script>
+    import { mapState, mapMutations} from 'vuex'
+    import { convertToCurrency, makeFirstCaseUpper } from "../../../scripts/functions"
+export default {
+    data: () => ({
+       headers_transactions:[
+          {
+          sortable: false,
+          text: 'Date',
+          value: 'date',
+        },
+        {
+          sortable: false,
+          text: 'TX Type',
+          value: 'type',
+        },
+        {
+          sortable: false,
+          text: 'Sender',
+          value: 'sender',
+          align: 'left',
+        },
+        {
+          sortable: false,
+          text: 'Reciever',
+          value: 'receiver',
+          align: 'left',
+        },
+        {
+          sortable: false,
+          text: 'Amount',
+          value: 'amount',
+          align: 'left',
+        },
+        ],
+        items_transactions:[],
+        balance: '',
+        sent: '',
+        recieved: '',
+        number_transactions: '',
+        address: ''
+    }),
+    computed: {
+      ...mapState(['searchResult']),
+    },
+    methods: {
+      ...mapMutations({
+        setSearch: 'SET_SEARCH_RESULT'
+      }),
+    },
+    async mounted () {
+        let address;
+        if(this.searchResult && this.searchResult.address){
+            address = this.searchResult.address
+        }else{
+            address = (await this.axios.get('get_address', {params:{address:this.$route.query.address}})).data;
+        }
+        this.address = address.address
+        this.balance = convertToCurrency(address.current_balance);
+        this.sent = convertToCurrency(address.total_sent)
+        this.recieved = convertToCurrency(address.total_received);
+        this.number_transactions = address.number_of_transactions.toString();
+        address.transactions.forEach((b) => {
+            this.items_transactions.push({
+                date: new Date( b.transaction.created_at).toString().slice(3, 24),
+                sender: b.transaction.sender,
+                receiver: b.transaction.receiver,
+                amount: convertToCurrency(b.transaction.amount),
+                type: makeFirstCaseUpper(b.transaction_type)
+            })
+        })
+    }
+}
+</script>
+
+<style lang='scss'>
+.tim-note {
+  bottom: 10px;
+  color: #c0c1c2;
+  display: block;
+  font-weight: 400;
+  font-size: 13px;
+  line-height: 13px;
+  left: 0;
+  margin-left: 20px;
+  width: 260px;
+}
+</style>  

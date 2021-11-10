@@ -25,9 +25,6 @@ const router = new Router({
           name: 'Transactions',
           path: 'pages/transactions',
           component: () => import('@/views/dashboard/pages/Transactions'),
-          children: [
-            
-          ]
         },
         {
           name: 'Transaction Details',
@@ -35,10 +32,15 @@ const router = new Router({
           component: () => import('@/views/dashboard/pages/TransactionDetails'),
         },
         {
-          name: 'Adresses',
-          path: 'tables/regular-tables',
-          component: () => import('@/views/dashboard/tables/RegularTables'),
+          name: 'Addresses',
+          path: 'tables/addresses',
+          component: () => import('@/views/dashboard/pages/Addresses'),
         },
+        {
+          name: "Address details",
+          path: 'addresses/details',
+          component: () => import('@/views/dashboard/pages/AddressDetails')
+        }
        
       ],
     },
