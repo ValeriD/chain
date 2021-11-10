@@ -29,7 +29,7 @@
           contain
         >
         <img
-          :src='`favicon.jpg`'
+          :src='logoImage'
         >
         </v-list-item-avatar>
 
@@ -72,16 +72,6 @@
       <!-- https://github.com/vuetifyjs/vuetify/pull/8574 -->
       <div />
     </v-list>
-
-    <!-- <template v-slot:append>
-      <base-item
-        :item='{
-          title: $t('upgrade'),
-          icon: 'mdi-package-up',
-          to: '/upgrade',
-        }'
-      />
-    </template> -->
   </v-navigation-drawer>
 </template>
 
@@ -97,45 +87,30 @@
         type: Boolean,
         default: false,
       },
+      logoImage:{
+        type:String,
+        default: require("@/assets/logo.jpg"),
+      }
     },
 
     data: () => ({
       items: [
         {
-          // icon: 'mdi-view-dashboard',
           title: 'Home',
           to: '/',
         },
         {
-          // icon: 'mdi-account',
           title: 'Charts',
           to: '/pages/user',
         },
         {
           title: 'Addresses',
-          // icon: 'mdi-clipboard-outline',
           to: '/tables/regular-tables',
         },
         {
           title: 'Transactions',
-          // icon: 'mdi-format-font',
           to: '/components/typography',
         },
-        // {
-        //   title: 'icons',
-        //   icon: 'mdi-chart-bubble',
-        //   to: '/components/icons'
-        // },
-        // {
-        //   title: 'google',
-        //   icon: 'mdi-map-marker',
-        //   to: '/maps/google-maps'
-        // },
-        // {
-        //   title: 'notifications',
-        //   icon: 'mdi-bell',
-        //   to: '/components/notifications'
-        // }
       ],
     }),
 
