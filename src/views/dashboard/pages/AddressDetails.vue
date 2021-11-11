@@ -4,17 +4,23 @@
     fluid
     tag='section'
   >
+  <!-- Loading screen -->
+  <LoadingScreen v-if="isLoading"/>
+ 
+  <!-- Screen when loaded -->
+  <v-row v-if="!isLoading">
     <v-row>
         <v-chip
         color="orange"
         rounded
         text-color="white"
+        large
         align="left"
         >
         <div class="font-weight-regular display-1">Address: {{ address }}</div>
         </v-chip>
     </v-row>
-    <v-row>
+      <v-row>
         <v-col
             cols='12'
             sm='6'
@@ -95,12 +101,17 @@
         </v-card-text>
       </base-material-card>
     </v-col>
+    </v-row>
      </v-container>
 </template>   
 <script>
+    import LoadingScreen from '../components/Loading'
     import { mapState, mapMutations} from 'vuex'
     import { convertToCurrency, makeFirstCaseUpper } from "../../../scripts/functions"
 export default {
+    components:{
+      LoadingScreen
+    },
     data: () => ({
        headers_transactions:[
           {
@@ -137,7 +148,8 @@ export default {
         sent: '',
         recieved: '',
         number_transactions: '',
-        address: ''
+        address: '',
+        isLoading: true
     }),
     computed: {
       ...mapState(['searchResult']),
@@ -168,6 +180,7 @@ export default {
                 type: makeFirstCaseUpper(b.transaction_type)
             })
         })
+        this.isLoading = false;
     }
 }
 </script>

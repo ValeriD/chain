@@ -4,7 +4,11 @@
     fluid
     tag='section'
   >
- 
+   <!-- Loading Screen -->
+  <LoadingScreen v-if="isLoading"/>
+
+  <!-- Screen when data loaded -->
+  <v-row v-if="!isLoading">
     <v-row
       align='center'
       justify='center'
@@ -28,10 +32,13 @@
         </base-material-card>
       </v-col>
     </v-row>
+  </v-row>
   </v-container>
 </template>
 
 <script>
+  import LoadingScreen from '../components/Loading'
+
   import { mapState, mapMutations } from 'vuex'
   import { convertToCurrency } from '../../../scripts/functions.js'
 
@@ -63,6 +70,7 @@
         },
       ],
       items: [],
+      isLoading: true,
     }),
      computed: {
       ...mapState(['searchResult']),
@@ -87,6 +95,7 @@
                   amount: convertToCurrency(b.amount),
                 })
               })
+              this.isLoading = false;
             })
             .catch((e) => {console.log(e);})      
     }

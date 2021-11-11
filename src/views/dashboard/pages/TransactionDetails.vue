@@ -4,17 +4,23 @@
     fluid
     tag='section'
   >
-    <v-row>
-    <v-chip
-      color="orange"
-      rounded
-      text-color="white"
-      align="left"
-    >
-      <div class="font-weight-regular display-1">Transaction ID: {{ transaction_id }}</div>
-    </v-chip>
-    </v-row>
+   
+     <!-- Loading Screen -->
+  <LoadingScreen v-if="isLoading"/>
 
+  <!-- Screen when data loaded -->
+  <v-row v-if="!isLoading">
+    <v-row>
+        <v-chip
+        color="orange"
+        rounded
+        large
+        text-color="white"
+        align="left"
+        >
+        <div class="font-weight-regular display-1">Transaction ID: {{ transaction_id }}</div>
+        </v-chip>
+    </v-row>
     <v-row
       align='center'
       justify='center'
@@ -117,11 +123,14 @@
                 </v-card-text>
                 </base-material-card>
             </v-col>
-            </v-row>
+        </v-row>
+  </v-row>
     </v-container>
 </template>
 
 <script>
+    import LoadingScreen from '../components/Loading'
+
     import { mapState, mapMutations} from 'vuex'
     import { convertToCurrency } from "../../../scripts/functions"  
     export default {
@@ -159,6 +168,7 @@
             transaction_amount: '',
             confirmations: '',
             transaction_id: '',
+            isLoading: true
         }),
         computed: {
             ...mapState(['searchResult'])
@@ -196,6 +206,7 @@
                     })
                 }) 
             }
+            this.isLoading = false;
         }
     }
 

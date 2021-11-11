@@ -4,6 +4,11 @@
     fluid
     tag='section'
   >
+   <!-- Loading Screen -->
+  <LoadingScreen v-if="isLoading"/>
+
+  <!-- Screen when data loaded -->
+  <v-row v-if="!isLoading">
     <v-row>
       <v-col
         cols='12'
@@ -81,15 +86,22 @@
         </base-material-card>
       </v-col>
     </v-row>
+  </v-row>
   </v-container>
 </template>
 
 <script>
+  import LoadingScreen from '../components/Loading'
+
   import { convertToCurrency } from '../../../scripts/functions.js'
   import { convertSpace } from '../../../scripts/functions.js'
   export default {
     name: 'Blocks',
-  
+
+    components: {
+      LoadingScreen
+    },
+
     data () {
       return {
         headers: [
@@ -129,6 +141,7 @@
         space: '',
         circulatingSupply: '',
         uniqueAddressCount: '',
+        isLoading: true,
         list: {
           0: false,
           1: false,
@@ -169,6 +182,7 @@
       this.space = convertSpace(blockchain_state.data.blockchain_state.space)
       this.circulatingSupply = convertToCurrency(blockchain_state.data.blockchain_state.circulating_supply)
       this.uniqueAddressCount = new Intl.NumberFormat().format(blockchain_state.data.blockchain_state.unique_address_count)
+      this.isLoading = false;
     },
   }
 </script>

@@ -4,6 +4,11 @@
     fluid
     tag='section'
   >
+  <!-- Loading Screen -->
+  <LoadingScreen v-if="isLoading"/>
+
+  <!-- Screen when data loaded -->
+  <v-row v-if="!isLoading">
     <v-col>
       <v-col
         class='pb-10'
@@ -154,11 +159,19 @@
         </base-material-chart-card>
       </v-col>
     </v-col>
+  </v-row>
   </v-container>
 </template>
 
 <script>
+  import LoadingScreen from '../components/Loading'
   export default {
+    name: 'Charts',
+
+    components: {
+      LoadingScreen
+    },
+
     data () {
       return {
         transactionsPerDay: {
@@ -219,7 +232,8 @@
         increaseTrans: 0,
         increaseNetspace: 0,
         increased: false,
-        decreased: false
+        decreased: false,
+        isLoading: true
       }
     },
     computed: {
@@ -276,6 +290,7 @@
           },
         }
       })
+      this.isLoading = false;
     },
      
   }

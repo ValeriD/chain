@@ -4,6 +4,11 @@
     fluid
     tag='section'
   >
+  <!-- Loading screen -->
+  <LoadingScreen v-if="isLoading"/>
+
+  <!-- Screen when loaded -->
+  <v-row v-if="!isLoading">
     <v-col
       cols='12'
       md='12'
@@ -26,15 +31,20 @@
         </v-card-text>
       </base-material-card>
     </v-col>
-    
+    </v-row>
   </v-container>
 </template>
 <script>
+    import LoadingScreen from '../components/Loading'
+
     import { mapState, mapMutations } from 'vuex'
     import { convertToCurrency } from '../../../scripts/functions.js'
 export default {
     name: 'Addresses',
     
+    components:{
+      LoadingScreen
+    },
     data () {
       return {
         
@@ -52,6 +62,7 @@ export default {
           },
         ],
         items: [],
+        isLoading: true
       }
     },
     computed: {
@@ -61,7 +72,7 @@ export default {
       ...mapMutations({
         setSearch: 'SET_SEARCH_RESULT'
       }),
-      async handleClick (e, searchRes) {
+      async handleClick (e) {
           console.log(e);
           this.$router.push({ path:'/addresses/details', query: { address: e.address}})
       }
@@ -74,6 +85,7 @@ export default {
           balance: convertToCurrency(b.current_balance),
         })
       })
+      this.isLoading= false;
     },
   }
 </script>

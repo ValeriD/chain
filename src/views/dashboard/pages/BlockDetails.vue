@@ -4,102 +4,111 @@
     fluid
     tag='section'
   >
+   <!-- Loading Screen -->
+  <LoadingScreen v-if="isLoading"/>
+
+  <!-- Screen when data loaded -->
+  <v-row v-if="!isLoading">
+    <v-row>
+        <v-chip
+          color="orange"
+          rounded
+          large
+          text-color="white"
+          align="left"
+          >
+          <div class="font-weight-regular display-1">Block Hash: {{ block_hash }}</div>
+          </v-chip>
+    </v-row>
   <v-row>
-       <v-chip
-        color="orange"
-        rounded
-        text-color="white"
-        align="left"
+        <v-col
+          cols='12'
+          sm='6'
+          lg='3'
         >
-        <div class="font-weight-regular display-1">Block Hash: {{ block_hash }}</div>
-        </v-chip>
+          <base-material-stats-card
+            color='green'
+            icon='mdi-arrange-send-to-back'
+            title='Block height'
+            :value='block_height'
+          />
+        </v-col>
+
+        <v-col
+          cols='12'
+          sm='6'
+          lg='3'
+        >
+          <base-material-stats-card
+          class="font-weight-light"
+            color='orange'
+            icon='mdi-clock-time-four-outline'
+            title='Date and time'
+            :value='date_time'
+          />
+        </v-col>
+
+        <v-col
+          cols='12'
+          sm='6'
+          lg='3'
+        >
+          <base-material-stats-card
+            color='green'
+            icon='mdi-circle-multiple-outline'
+            title='TX Amount'
+            :value='transactions_amount'
+          />
+        </v-col>
+
+        <v-col
+          cols='12'
+          sm='6'
+          lg='3'
+        >
+          <base-material-stats-card
+            color='purple'
+            icon='mdi-cached'
+            title='Number of transactions'
+            :value='number_of_transactions'
+          />
+        </v-col>
+
+        <v-col
+          cols='12'
+          md='12'
+        >
+        </v-col>
+      </v-row>
+      <v-row
+        align='center'
+        justify='center'
+      >
+        <v-col
+          cols='12'
+          md='12'
+        >
+          <base-material-card
+            icon='mdi-clipboard-text'
+            title='Transactions'
+            class='px-5 py-3'
+          >
+            <v-card-text>
+              <v-data-table
+                :headers='headers'
+                :items='items'
+              />
+            </v-card-text>
+          </base-material-card>
+        </v-col>
+      </v-row>
   </v-row>
- <v-row>
-      <v-col
-        cols='12'
-        sm='6'
-        lg='3'
-      >
-        <base-material-stats-card
-          color='green'
-          icon='mdi-arrange-send-to-back'
-          title='Block height'
-          :value='block_height'
-        />
-      </v-col>
-
-      <v-col
-        cols='12'
-        sm='6'
-        lg='3'
-      >
-        <base-material-stats-card
-        class="font-weight-light"
-          color='orange'
-          icon='mdi-clock-time-four-outline'
-          title='Date and time'
-          :value='date_time'
-        />
-      </v-col>
-
-      <v-col
-        cols='12'
-        sm='6'
-        lg='3'
-      >
-        <base-material-stats-card
-          color='green'
-          icon='mdi-circle-multiple-outline'
-          title='TX Amount'
-          :value='transactions_amount'
-        />
-      </v-col>
-
-      <v-col
-        cols='12'
-        sm='6'
-        lg='3'
-      >
-        <base-material-stats-card
-          color='purple'
-          icon='mdi-cached'
-          title='Number of transactions'
-          :value='number_of_transactions'
-        />
-      </v-col>
-
-      <v-col
-        cols='12'
-        md='12'
-      >
-      </v-col>
-    </v-row>
-     <v-row
-      align='center'
-      justify='center'
-    >
-      <v-col
-        cols='12'
-        md='12'
-      >
-        <base-material-card
-          icon='mdi-clipboard-text'
-          title='Transactions'
-          class='px-5 py-3'
-        >
-          <v-card-text>
-            <v-data-table
-              :headers='headers'
-              :items='items'
-            />
-          </v-card-text>
-        </base-material-card>
-      </v-col>
-    </v-row>
    </v-container>
 </template>
 
 <script>
+    import LoadingScreen from '../components/Loading'
+
     import { convertToCurrency } from '../../../scripts/functions.js'
     import { mapState, mapMutations } from 'vuex'
 
@@ -171,6 +180,7 @@
             }else{
               this.number_of_transactions = '0';
             }
+            this.isLoading = false;
         }
     }
 </script>
