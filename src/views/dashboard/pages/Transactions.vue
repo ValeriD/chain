@@ -43,6 +43,9 @@
   import { convertToCurrency } from '../../../scripts/functions.js'
 
   export default {
+    components: {
+      LoadingScreen
+    },
     data: () => ({
       headers: [
         {
@@ -80,10 +83,11 @@
         setSearch: 'SET_SEARCH_RESULT'
       }),
       async handleClick (e) {
-        this.$router.push({ path:'/pages/transactions/details', query:{id: e.transaction_id}})
+        this.$router.push({ path:'/pages/transactions/details', query:{transaction_id: e.transaction_id}})
       },
     },
     async mounted () {
+      this.isLoading = true;
       await this.axios.get('get_transactions', { params: { limit: 100, offset: 0 } })
             .then((res)=>{
               res.data.forEach((b, index) => {
@@ -96,8 +100,7 @@
                 })
               })
               this.isLoading = false;
-            })
-            .catch((e) => {console.log(e);})      
+            }); 
     }
   }
  

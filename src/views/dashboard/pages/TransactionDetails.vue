@@ -134,6 +134,10 @@
     import { mapState, mapMutations} from 'vuex'
     import { convertToCurrency } from "../../../scripts/functions"  
     export default {
+        name: 'TransactionDetails',
+        components: {
+            LoadingScreen
+        },
         data: () => ({
             headers_input: [
             {
@@ -184,22 +188,21 @@
                 transaction = this.searchResult.transaction
                 this.transaction_id = transaction.transaction_id
             }else{
-                this.transaction_id = this.$route.query.id
-                transaction = await this.axios.get('get_transaction_info', { params:{transaction_id: this.transaction_id}});
+                this.transaction_id = this.$route.query.transaction_id
+                transaction = (await this.axios.get('get_transaction_info', { params:{transaction_id: this.transaction_id}})).data;
             }
-            
-            this.confirmation_block = transaction.data.confirmation_block.toString();
-            this.transaction_amount = convertToCurrency(transaction.data.amount)
-            this.date_time = new Date(transaction.data.created_at).toString().slice(3, 24)
-            this.confirmations = transaction.data.confirmations_number.toString()
-            if(transaction.data.input){
+            this.confirmation_block = transaction.confirmation_block.toString();
+            this.transaction_amount = convertToCurrency(transaction.amount)
+            this.date_time = new Date(transaction.created_at).toString().slice(3, 24)
+            this.confirmations = transaction.confirmations_number.toString()
+            if(transaction.input){
                 this.items_input.push({
-                    input_hash: transaction.data.input.puzzle_hash,
-                    amount: convertToCurrency(transaction.data.input.amount)
+                    input_hash: transaction.input.puzzle_hash,
+                    amount: convertToCurrency(transaction.input.amount)
                 })
             }
-            if(transaction.data.output){
-                transaction.data.outputs.forEach((output, index) => {
+            if(transaction.output){
+                transaction.outputs.forEach((output, index) => {
                     this.items_output.push({
                         output_hash: output.address,
                         amount: convertToCurrency(output.amount)

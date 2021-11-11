@@ -177,7 +177,6 @@
         })
       })
       this.items.reverse();
-      console.log(this.space)
       this.height = new Intl.NumberFormat().format(blockchain_state.data.blockchain_state.peak.height)
       this.space = convertSpace(blockchain_state.data.blockchain_state.space)
       this.circulatingSupply = convertToCurrency(blockchain_state.data.blockchain_state.circulating_supply)
