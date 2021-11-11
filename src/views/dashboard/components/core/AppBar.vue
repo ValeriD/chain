@@ -100,25 +100,40 @@
       async searchAction () {
         if(this.search!==''){
           this.isLoading = true;
-          const req = await this.axios.get('search', { params: { search_text: this.search }}) // search
-          if(req.data.transaction ) {
-            this.$router.push({ path:'/pages/transactions/details' })
-            this.search = ''
+          await this.axios.get('search', { params: { search_text: this.search }})
+            .then(req => {
+              if(req.data.transaction ) {
+                this.$router.push({ path:'/pages/transactions/details', query:{transaction_id: req.data.transaction.transaction_id} })
+                this.search = ''
+              }
+              else if(req.data.address) {
+                this.$router.push({ path:'/addresses/details', query: { address: req.data.address.address} })
+                this.search = ''
 
-          }
-          else if(req.data.address) {
-            this.$router.push({ path:'/addresses/details' })
-            this.search = ''
+              }else if(req.data.block){
+                this.$router.push({ path:'/pages/blocks/details', query: {block_hash: this.search} })
+                this.search = ''
+              }
+              this.setSearch(req.data)
+            })
+            .catch(err => {
+              this.$toast.error("Not found!", {
+              position: "top-right",
+              timeout: 5000,
+              closeOnClick: true,
+              pauseOnFocusLoss: true,
+              pauseOnHover: true,
+              draggable: true,
+              draggablePercent: 0.6,
+              showCloseButtonOnHover: false,
+              hideProgressBar: true,
+              closeButton: "button",
+              icon: true,
+              rtl: false
+            });
+          });
 
-          }else if(req.data.block){
-            this.$router.push({ path:'/pages/blocks/details', query: {block_hash: this.search} })
-            this.search = ''
-
-          }else{
-            //TODO add the 404 not found
-          }
           this.isLoading = false;
-          this.setSearch(req.data)
         }
       }
     },
