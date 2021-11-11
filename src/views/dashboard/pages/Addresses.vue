@@ -73,7 +73,6 @@ export default {
         setSearch: 'SET_SEARCH_RESULT'
       }),
       async handleClick (e) {
-          console.log(e);
           this.$router.push({ path:'/addresses/details', query: { address: e.address}})
       }
     },

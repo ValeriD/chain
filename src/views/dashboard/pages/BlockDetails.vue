@@ -8,7 +8,7 @@
   <LoadingScreen v-if="isLoading"/>
 
   <!-- Screen when data loaded -->
-  <v-row v-if="!isLoading">
+  <template v-if="!isLoading">
     <v-row>
         <v-chip
           color="orange"
@@ -20,7 +20,7 @@
           <div class="font-weight-regular display-1">Block Hash: {{ block_hash }}</div>
           </v-chip>
     </v-row>
-  <v-row>
+    <v-row>
         <v-col
           cols='12'
           sm='6'
@@ -102,7 +102,7 @@
           </base-material-card>
         </v-col>
       </v-row>
-  </v-row>
+  </template>
    </v-container>
 </template>
 
@@ -113,7 +113,10 @@
     import { mapState, mapMutations } from 'vuex'
 
     export default {
-
+        name: 'BlockDetails',
+        components:{
+          LoadingScreen
+        },
         data : () => ({
             headers: [
               {
@@ -146,6 +149,7 @@
             date_time: '',
             transactions_amount: '',
             number_of_transactions: '',
+            isLoading: true,
         }),
         computed: {
         ...mapState(['searchResult']),
