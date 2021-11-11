@@ -111,7 +111,7 @@
                 this.search = ''
 
               }else if(req.data.block){
-                this.$router.push({ path:'/pages/blocks/details', query: {block_hash: this.search} })
+                this.$router.push({ path:'/pages/blocks/details', query: {block_hash: (this.search.length === 66)? this.search : req.data.block.header_hash} });
                 this.search = ''
               }
               this.setSearch(req.data)
