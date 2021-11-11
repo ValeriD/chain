@@ -32,6 +32,14 @@
       hide-details
       v-model="search"
     >
+       <template
+        v-if="$vuetify.breakpoint.mdAndUp"
+        v-slot:append
+      >
+        <img class="loading" v-if="isLoading" :src="loadingImg"/>
+
+      </template>
+
       <template
         v-if="$vuetify.breakpoint.mdAndUp"
         v-slot:append-outer
@@ -45,6 +53,7 @@
         >
           <v-icon>mdi-magnify</v-icon>
         </v-btn>
+       
       </template>
     </v-text-field>
 
@@ -68,10 +77,15 @@
         type: Boolean,
         default: false,
       },
+      loadingImg:{
+        type:String,
+        default: require("@/assets/loading.gif"),
+      }
     },
 
     data: () => ({
-      search: ''
+      search: '',
+      isLoading: false
     }),
 
     computed: {
@@ -84,23 +98,35 @@
         setSearch: 'SET_SEARCH_RESULT'
       }),
       async searchAction () {
-        const req = await this.axios.get('search', { params: { search_text: this.search }}) // search
-        if(req.data.transaction ) {
-          this.$router.push({ path:'/pages/transactions/details' })
-          this.search = ''
+        if(this.search!==''){
+          this.isLoading = true;
+          const req = await this.axios.get('search', { params: { search_text: this.search }}) // search
+          if(req.data.transaction ) {
+            this.$router.push({ path:'/pages/transactions/details' })
+            this.search = ''
 
+          }
+          else if(req.data.address) {
+            this.$router.push({ path:'/addresses/details' })
+            this.search = ''
+
+          }else if(req.data.block){
+            this.$router.push({ path:'/pages/blocks/details', query: {block_hash: this.search} })
+            this.search = ''
+
+          }else{
+            //TODO add the 404 not found
+          }
+          this.isLoading = false;
+          this.setSearch(req.data)
         }
-        else if(req.data.address) {
-          this.$router.push({ path:'/addresses/details' })
-          this.search = ''
-
-        }else if(req.data.block){
-          this.$router.push({ path:'/pages/blocks/details', query: {block_hash: this.search} })
-          this.search = ''
-
-        }
-        this.setSearch(req.data)
       }
     },
   }
 </script>
+<style>
+  .loading {
+    height: 20px;
+    width: 20px;
+  }
+</style>
