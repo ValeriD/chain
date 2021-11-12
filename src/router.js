@@ -18,27 +18,27 @@ const router = new Router({
         },
         {
           name: 'Block Details',
-          path: '/pages/blocks/details',
+          path: '/blocks/details',
           component: () => import('@/views/dashboard/pages/BlockDetails')
         },
         {
           name: 'Charts',
-          path: '/pages/charts',
+          path: '/charts',
           component: () => import('@/views/dashboard/pages/Charts'),
         },
         {
           name: 'Transactions',
-          path: 'pages/transactions',
+          path: 'transactions',
           component: () => import('@/views/dashboard/pages/Transactions'),
         },
         {
           name: 'Transaction Details',
-          path: 'pages/transactions/details',
+          path: 'transactions/details',
           component: () => import('@/views/dashboard/pages/TransactionDetails'),
         },
         {
           name: 'Addresses',
-          path: 'tables/addresses',
+          path: 'addresses',
           component: () => import('@/views/dashboard/pages/Addresses'),
         },
         {

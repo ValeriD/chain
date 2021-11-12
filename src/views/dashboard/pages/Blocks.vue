@@ -161,7 +161,7 @@
         this.list[index] = !this.list[index]
       },
       handleClick(e){
-        this.$router.push({path:'/pages/blocks/details', query: { block_hash: e.block_hash }})
+        this.$router.push({path:'/blocks/details', query: { block_hash: e.block_hash }})
       }
     },
     async mounted () {

@@ -83,7 +83,7 @@
         setSearch: 'SET_SEARCH_RESULT'
       }),
       async handleClick (e) {
-        this.$router.push({ path:'/pages/transactions/details', query:{transaction_id: e.transaction_id}})
+        this.$router.push({ path:'/transactions/details', query:{transaction_id: e.transaction_id}})
       },
     },
     async mounted () {

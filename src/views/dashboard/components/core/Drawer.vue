@@ -101,15 +101,15 @@
         },
         {
           title: 'Charts',
-          to: '/pages/charts',
+          to: '/charts',
         },
         {
           title: 'Addresses',
-          to: '/tables/addresses',
+          to: '/addresses',
         },
         {
           title: 'Transactions',
-          to: '/pages/transactions',
+          to: '/transactions',
         },
       ],
     }),
