@@ -12,7 +12,7 @@
         :ratio="ratio"
         :responsive-options="responsiveOptions"
         :type="type"
-        style="max-height: 150px;"
+        style="max-height: 350px;"
       />
     </template>
 
@@ -72,7 +72,7 @@
       color: #999
 
     .v-card--material__heading
-      max-height: 185px
+      max-height: 485px
 
       .ct-label
         color: inherit
@@ -81,7 +81,7 @@
         font-weight: 100
 
       .ct-grid
-        stroke: rgba(255, 255, 255, 0.2)
+        stroke: rgba(255, 255, 255, 0.7)
 
       .ct-series-a .ct-point,
       .ct-series-a .ct-line,

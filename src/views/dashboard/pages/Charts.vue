@@ -20,48 +20,6 @@
           hover-reveal
           type='Line'
         >
-          <template
-            v-slot:reveal-actions
-          >
-            <v-tooltip bottom>
-              <template v-slot:activator='{ attrs, on }'>
-                <v-btn
-                  v-bind='attrs'
-                  color='info'
-                  icon
-                  v-on='on'
-                >
-                  <v-icon
-                    color='info'
-                  >
-                    mdi-refresh
-                  </v-icon>
-                </v-btn>
-              </template>
-
-              <span>Refresh</span>
-            </v-tooltip>
-
-            <v-tooltip
-            bottom
-            >
-              <template
-              v-slot:activator='{ attrs, on }'
-              >
-                <v-btn
-                  v-bind='attrs'
-                  light
-                  icon
-                  v-on='on'
-                >
-                  <v-icon>mdi-pencil</v-icon>
-                </v-btn>
-              </template>
-
-              <span>Change Date</span>
-            </v-tooltip>
-          </template>
-
           <h4 class='card-title font-weight-light mt-2 ml-2'>
             Max net space per day (PiB)
           </h4>
@@ -72,18 +30,8 @@
             >
               {{decreased ? 'mdi-arrow-up' : 'mdi-arrow-down'}}
             </v-icon>
-            <span :class="{ 'green--text': decreased, 'red--text' : !decreased }">{{increaseNetspace}}%</span>&nbsp; {{decreased ? 'increase' : 'decrease'}} in today's sales
+            <span :class="{ 'green--text': decreased, 'red--text' : !decreased }">{{increaseNetspace}}%</span>&nbsp; {{decreased ? 'increase' : 'decrease'}} in Netspace
           </p>
-
-          <template v-slot:actions>
-            <v-icon
-              class='mr-1'
-              small
-            >
-              mdi-clock-outline
-            </v-icon>
-            <span class='text-caption grey--text font-weight-light'>updated 4 minutes ago</span>
-          </template>
         </base-material-chart-card>
       </v-col>
       <v-col>
@@ -141,21 +89,9 @@
             >
               {{increased ? 'mdi-arrow-up' : 'mdi-arrow-down'}}
             </v-icon>
-            <span :class="{ 'green--text': increased, 'red--text' : !increased }">{{increaseTrans}}%</span>&nbsp; {{increased ? 'increase' : 'decrease'}} in today's sales
+            <span :class="{ 'green--text': increased, 'red--text' : !increased }">{{increaseTrans}}%</span>&nbsp; {{increased ? 'increase' : 'decrease'}} in number of Transactions
           </p>
 
-          <template v-slot:actions>
-            <v-icon
-              class='mr-1'
-              small
-            >
-              mdi-clock-outline
-            </v-icon>
-            <span
-              class='text-caption grey--text font-weight-light'
-            >
-            updated 10 minutes ago </span>
-          </template>
         </base-material-chart-card>
       </v-col>
     </v-col>
@@ -183,6 +119,9 @@
             axisX: {
               showGrid: false,
             },
+            axisY:{
+              showGrid: true,
+            },
             low: 0,
             high: this.maxTrans,
             chartPadding: {
@@ -197,7 +136,7 @@
               'screen and (max-width: 640px)',
               {
                 seriesBarDistance: 5,
-                axisX: {
+                axisY: {
                   labelInterpolationFnc: function (value) {
                     return value[0]
                   },
@@ -212,6 +151,9 @@
             series: [],
           },
           options: {
+            axisY:{
+              showGrid: true,
+            },
             lineSmooth: this.$chartist.Interpolation.cardinal({
               tension: 5,
             }),
@@ -223,7 +165,21 @@
               bottom: 0,
               left: 20,
             },
+
           },
+          responsiveOptions: [
+            [
+              'screen and (max-width: 640px)',
+              {
+                seriesBarDistance: 5,
+                axisY: {
+                  labelInterpolationFnc: function (value) {
+                    return value[0]
+                  },
+                },
+              },
+            ],
+          ],
         },
         netSpaceLabels: [],
         netSpaceSeries: [],
@@ -233,7 +189,9 @@
         increaseNetspace: 0,
         increased: false,
         decreased: false,
-        isLoading: true
+        isLoading: true,
+        maxNet: 0,
+        maxTrans: 0,
       }
     },
     computed: {
@@ -244,29 +202,41 @@
      methods:{
       getChartData: async function (req){
           const res = await this.axios.get(req);
-          const labels = res.data.map(record => record._id);
-          const series = res.data.map(record => (req === 'get_transactions_per_day')?record.transactions_count : record.max_netspace/1125899906842620)
+          // Calculating the step for the dots
+          const records = [];
+          const step = (res.data.length<15)? 1 : Math.ceil(res.data.length/30);
+         
+          // Filtering the data
+          for(var i = 0, j=0; i<res.data.length; j++, i+=step){
+            records[j] = res.data[i];
 
-          const maxRecords = res.data.slice(-2);
+          }
+          //Mapping the labels and the values
+          const labels = records.map(record => record._id);
+          const series = records.map(record => (req === 'get_transactions_per_day')?record.transactions_count : record.max_netspace/1125899906842620)
+
+          const maxRecords = series.slice(-2);
+          
           if(maxRecords[1] > maxRecords[0]){
             this.increased = true
             if(req === 'get_transactions_per_day'){
               this.increaseTrans = ((maxRecords[0]-maxRecords[1])/100.0).toFixed(2)
             }else{
-              this.increaseTrans = ((maxRecords[0]-maxRecords[1])/100.0).toFixed(2)
+              this.increaseNetspace = ((maxRecords[0]-maxRecords[1])/100.0).toFixed(2)
             }
           }else{
             this.increased = false;
             if(req === 'get_transactions_per_day'){
               this.increaseTrans = ((maxRecords[0]-maxRecords[1])/100.0).toFixed(2)
             }else{
-              this.increaseTrans = ((maxRecords[0]-maxRecords[1])/100.0).toFixed(2)
+              this.increaseNetspace = ((maxRecords[0]-maxRecords[1])/100.0).toFixed(2)
             }
           }
 
+
           return {
-            labels: labels.slice(-20),
-            series: [series.slice(-20)]
+            labels: labels,
+            series: [series]
           }
       }
     },
