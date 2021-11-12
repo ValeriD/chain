@@ -97,24 +97,36 @@
         setDrawer: 'SET_DRAWER',
         setSearch: 'SET_SEARCH_RESULT'
       }),
+      redirect(path, query){
+        console.log(query);
+        if(this.$router.currentRoute.path === path){
+          this.$router.replace({path: path, query: query});
+        }else{
+          this.$router.push({path: path, query: query});
+        }
+        this.search = '';
+      },
       async searchAction () {
         if(this.search!==''){
           this.isLoading = true;
           await this.axios.get('search', { params: { search_text: this.search }})
             .then(req => {
               if(req.data.transaction ) {
-                this.$router.push({ path:'/pages/transactions/details', query:{transaction_id: req.data.transaction.transaction_id} })
-                this.search = ''
+                this.redirect('/transactions/details', 
+                              {
+                                transaction_id: req.data.transaction.transaction_id
+                              });
               }
               else if(req.data.address) {
-                this.$router.push({ path:'/addresses/details', query: { address: req.data.address.address} })
-                this.search = ''
+                this.redirect('/addresses/details', {
+                  address: req.data.address.address
+                });
 
               }else if(req.data.block){
-                this.$router.push({ path:'/pages/blocks/details', query: {block_hash: (this.search.length === 66)? this.search : req.data.block.header_hash} });
-                this.search = ''
+                this.redirect('/blocks/details', {
+                  block_hash: (this.search.length === 66)? this.search : req.data.block.header_hash
+                })
               }
-              this.setSearch(req.data)
             })
             .catch(err => {
               this.$toast.error("Not found!", {
@@ -132,7 +144,7 @@
               rtl: false
             });
           });
-
+          this.setSearch('');
           this.isLoading = false;
         }
       }

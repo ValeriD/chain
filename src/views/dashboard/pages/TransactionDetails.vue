@@ -175,41 +175,64 @@
             isLoading: true
         }),
         computed: {
-            ...mapState(['searchResult'])
+            ...mapState(['searchResult']),
+            query() {
+                return this.$route.query.transaction_id
+            }
         },
         methods: {
             ...mapMutations(({
                 setSearch: 'SET_SEARCH_RESULT'
-            }))
+            })),
+            
+            handleQueryChange:async function(){
+                let transaction
+                if(this.searchResult && this.searchResult.transaction){
+                    block = this.searchResult.transaction;
+                }else{
+                    //Handles direct change in the URL bar
+                    transaction = (await this.axios.get('get_transaction_info', { params:{transaction_id: this.transaction_id}})).data;
+                }
+                this.setValues(transaction);
+
+            },
+            
+            setValues: function(transaction){
+                this.transaction_id = transaction.transaction_id
+                this.confirmation_block = transaction.confirmation_block.toString();
+                this.transaction_amount = convertToCurrency(transaction.amount)
+                this.date_time = new Date(transaction.created_at).toString().slice(3, 24)
+                this.confirmations = transaction.confirmations_number.toString()
+                if(transaction.input){
+                    this.items_input.push({
+                        input_hash: transaction.input.puzzle_hash,
+                        amount: convertToCurrency(transaction.input.amount)
+                    })
+                }
+                if(transaction.output){
+                    transaction.outputs.forEach((output, index) => {
+                        this.items_output.push({
+                            output_hash: output.address,
+                            amount: convertToCurrency(output.amount)
+                        })
+                    }) 
+                }
+            }
         },
         async mounted () {
             let transaction;
             if(this.searchResult && this.searchResult.transaction){
                 transaction = this.searchResult.transaction
-                this.transaction_id = transaction.transaction_id
             }else{
-                this.transaction_id = this.$route.query.transaction_id
-                transaction = (await this.axios.get('get_transaction_info', { params:{transaction_id: this.transaction_id}})).data;
+                transaction = (await this.axios.get('get_transaction_info', { params:{transaction_id: this.$route.query.transaction_id}})).data;
             }
-            this.confirmation_block = transaction.confirmation_block.toString();
-            this.transaction_amount = convertToCurrency(transaction.amount)
-            this.date_time = new Date(transaction.created_at).toString().slice(3, 24)
-            this.confirmations = transaction.confirmations_number.toString()
-            if(transaction.input){
-                this.items_input.push({
-                    input_hash: transaction.input.puzzle_hash,
-                    amount: convertToCurrency(transaction.input.amount)
-                })
-            }
-            if(transaction.output){
-                transaction.outputs.forEach((output, index) => {
-                    this.items_output.push({
-                        output_hash: output.address,
-                        amount: convertToCurrency(output.amount)
-                    })
-                }) 
-            }
+            this.setValues(transaction);
             this.isLoading = false;
+        },
+        watch:{
+            query(){
+                this.handleQueryChange();
+            }
         }
     }
 

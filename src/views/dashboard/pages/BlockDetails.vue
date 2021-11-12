@@ -109,7 +109,7 @@
 <script>
     import LoadingScreen from '../components/Loading'
 
-    import { convertToCurrency } from '../../../scripts/functions.js'
+    import { convertToCurrency, convertToFormattedInteger } from '../../../scripts/functions.js'
     import { mapState, mapMutations } from 'vuex'
 
     export default {
@@ -153,11 +153,43 @@
         }),
         computed: {
         ...mapState(['searchResult']),
+        query(){
+          return this.$route.query.block_hash;
+        }
         },
         methods: {
             ...mapMutations({
                 setSearch: 'SET_SEARCH_RESULT'
             }),
+            setValues: function(block){
+              this.block_hash = this.$route.query.block_hash
+              this.block_height = convertToFormattedInteger(block.reward_chain_block.height).toString()
+              this.date_time = block.foliage_transaction_block? new Date(block.foliage_transaction_block.timestamp*1000).toString().slice(3, 24) : "No time info";
+              this.transactions_amount = block.foliage_transaction_block? convertToCurrency(block.transactions_info.amount) : "0";
+              if(block.foliage_transaction_block){
+                block.transactions_info.transactions.forEach(t => {
+                  this.items.push({
+                    transaction_id: t.transaction_id,
+                    date: new Date( t.created_at).toString().slice(3, 24),
+                    sender: t.sender,
+                    reciever: t.receiver,
+                    amount: convertToCurrency(t.amount),
+                  })
+                })
+                this.number_of_transactions = this.items.length.toString()
+              }else{
+                this.number_of_transactions = '0';
+              }
+            },
+            handleQueryChange: async function(){
+              let block;
+              if(this.searchResult && this.searchResult.block){
+                block = this.searchResult.block;
+              }else{
+                block = (await this.axios.get('get_block', {params: {hash: this.$route.query.block_hash}})).data.block
+              }
+              this.setValues(block);
+            }
         },
         async mounted () {
             let block;
@@ -166,25 +198,13 @@
             }else{
                 block = (await this.axios.get('get_block', {params: {hash: this.$route.query.block_hash}})).data.block
             }
-            this.block_hash = this.$route.query.block_hash
-            this.block_height = block.reward_chain_block.height.toString()
-            this.date_time = block.foliage_transaction_block? new Date(block.foliage_transaction_block.timestamp*1000).toString().slice(3, 24) : "No time info";
-            this.transactions_amount = block.foliage_transaction_block? convertToCurrency(block.transactions_info.amount) : "0";
-            if(block.foliage_transaction_block){
-              block.transactions_info.transactions.forEach(t => {
-                this.items.push({
-                  transaction_id: t.transaction_id,
-                  date: new Date( t.created_at).toString().slice(3, 24),
-                  sender: t.sender,
-                  reciever: t.receiver,
-                  amount: convertToCurrency(t.amount),
-                })
-              })
-              this.number_of_transactions = this.items.length.toString()
-            }else{
-              this.number_of_transactions = '0';
-            }
+            this.setValues(block)
             this.isLoading = false;
+        },
+        watch:{
+          query(){
+            this.handleQueryChange();
+          }
         }
     }
 </script>

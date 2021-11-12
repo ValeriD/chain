@@ -153,19 +153,16 @@ export default {
     }),
     computed: {
       ...mapState(['searchResult']),
+      // Returns the current endpoint
+      query() {
+        return this.$route.query.address;
+      }
     },
     methods: {
       ...mapMutations({
         setSearch: 'SET_SEARCH_RESULT'
       }),
-    },
-    async mounted () {
-        let address;
-        if(this.searchResult && this.searchResult.address){
-            address = this.searchResult.address
-        }else{
-            address = (await this.axios.get('get_address', {params:{address:this.$route.query.address}})).data;
-        }
+      setValues: function(address){
         this.address = address.address
         this.balance = convertToCurrency(address.current_balance);
         this.sent = convertToCurrency(address.total_sent)
@@ -180,7 +177,32 @@ export default {
                 type: makeFirstCaseUpper(b.transaction_type)
             })
         })
+      },
+      handleQueryChange : async function(){
+        //If a search data is present use it
+        if(this.searchResult && this.searchResult.address){
+            this.setValues(this.searchResult.address);
+        }else{
+            //Handles direct change in the URL bar
+            let address = (await this.axios.get('get_address', {params:{address:this.$route.query.address}})).data;
+            this.setValues(address);
+        }
+      }
+    },
+    async mounted () {
+        let address;
+        if(this.searchResult && this.searchResult.address){
+            address = this.searchResult.address
+        }else{
+            address = (await this.axios.get('get_address', {params:{address:this.$route.query.address}})).data;
+        }
+        this.setValues(address);
         this.isLoading = false;
+    },
+    watch:{
+      query(){
+        this.handleQueryChange();
+      }
     }
 }
 </script>
