@@ -8,7 +8,7 @@
   <LoadingScreen v-if="isLoading"/>
 
   <!-- Screen when data loaded -->
-  <v-row v-if="!isLoading">
+  <template v-if="!isLoading">
     <v-row>
       <v-col
         cols='12'
@@ -75,27 +75,27 @@
             <v-data-table
               :headers='headers'
               :items='items' 
-              
               :footer-props="{
               'items-per-page-options': [10, 20]
             }"
             @click:row="handleClick"
             :items-per-page="10"
+            :breakpoint=0
             />
           </v-card-text>
         </base-material-card>
       </v-col>
     </v-row>
-  </v-row>
+  </template>
   </v-container>
 </template>
 
 <script>
   import LoadingScreen from '../components/Loading'
 
-  import { convertToCurrency } from '../../../scripts/functions.js'
-  import { convertSpace } from '../../../scripts/functions.js'
-  export default {
+  import { convertToCurrency,convertSpace, truncate } from '../../../scripts/functions.js'
+
+export default {
     name: 'Blocks',
 
     components: {
@@ -113,7 +113,7 @@
           {
             sortable: false,
             text: 'Block Hash',
-            value: 'block_hash',
+            value: 'displayed_block_hash',
             align: 'right',
           },
           {
@@ -162,15 +162,20 @@
       },
       handleClick(e){
         this.$router.push({path:'/blocks/details', query: { block_hash: e.block_hash }})
-      }
+      },
+      truncIfNeeded(string){
+        return (this.$vuetify.breakpoint.mobile)? truncate(string) : string;
+      },
     },
+
     async mounted () {
       const blockchain_state = await this.axios.get('get_blockchain_state') // blockchain state
       const blocks = await this.axios.get('get_blocks', { params: { start_height: blockchain_state.data.blockchain_state.peak.height-19, end_height: blockchain_state.data.blockchain_state.peak.height+1 } }) // blocks
       // table data filled
       blocks.data.blocks.forEach((b, index) => {
         this.items.push({
-          block_height: b.reward_chain_block.height,
+          block_height: new Intl.NumberFormat().format(b.reward_chain_block.height),
+          displayed_block_hash: this.truncIfNeeded(b.header_hash),
           block_hash: b.header_hash,
           time: b.foliage_transaction_block ? new Date(b.foliage_transaction_block?.timestamp*1000).toString().slice(3, 24) : 'No time info',
           number_of_transactions: b.transactions_info?.reward_claims_incorporated.length || '0',
