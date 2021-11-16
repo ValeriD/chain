@@ -23,3 +23,10 @@ export function convertSpace(space){
         return Intl.NumberFormat().format(Number.parseFloat(space/Math.pow(2,10)).toFixed(2)) + ' B';
     }
 }
+
+export function truncate(string){
+    let str_beg = string.substr(0,15);
+    let str_end = string.substr(-10);
+
+    return str_beg + "..." + str_end;
+}

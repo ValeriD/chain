@@ -38,7 +38,9 @@
     import LoadingScreen from '../components/Loading'
 
     import { mapState, mapMutations } from 'vuex'
-    import { convertToCurrency } from '../../../scripts/functions.js'
+    import { convertToCurrency, truncate } from '../../../scripts/functions.js'
+  
+
 export default {
     name: 'Addresses',
     
@@ -52,7 +54,7 @@ export default {
           {
             sortable: false,
             text: 'Address',
-            value: 'address',
+            value: 'displayed_address',
           },
           {
             sortable: false,
@@ -67,6 +69,7 @@ export default {
     },
     computed: {
       ...mapState(['searchResult']),
+      
     },
     methods: {
       ...mapMutations({
@@ -74,12 +77,16 @@ export default {
       }),
       async handleClick (e) {
           this.$router.push({ path:'/addresses/details', query: { address: e.address}})
-      }
+      },
+      truncIfNeeded(string){
+        return (this.$vuetify.breakpoint.mobile)? truncate(string) : string;
+      },
     },
     async mounted () {
       const addresses = await this.axios.get('get_addresses', { params: { offset: 0 } }) // addresses
       addresses.data.forEach((b, index) => {
         this.items.push({
+          displayed_address: this.truncIfNeeded(b.address),
           address: b.address,
           balance: convertToCurrency(b.current_balance),
         })

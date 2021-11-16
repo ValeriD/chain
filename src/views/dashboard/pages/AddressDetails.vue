@@ -8,7 +8,7 @@
   <LoadingScreen v-if="isLoading"/>
  
   <!-- Screen when loaded -->
-  <v-row v-if="!isLoading">
+  <template v-if="!isLoading">
     <v-row>
         <v-chip
         color="orange"
@@ -55,8 +55,8 @@
             <base-material-stats-card
             color='primary'
             icon='mdi-archive-arrow-down-outline'
-            title='Total recieved'
-            :value='recieved'
+            title='Total received'
+            :value='received'
             />
         </v-col>
 
@@ -101,13 +101,13 @@
         </v-card-text>
       </base-material-card>
     </v-col>
-    </v-row>
+    </template>
      </v-container>
 </template>   
 <script>
     import LoadingScreen from '../components/Loading'
     import { mapState, mapMutations} from 'vuex'
-    import { convertToCurrency, makeFirstCaseUpper } from "../../../scripts/functions"
+    import { convertToCurrency, makeFirstCaseUpper, truncate, convertToFormattedInteger } from "../../../scripts/functions"
 export default {
     components:{
       LoadingScreen
@@ -132,7 +132,7 @@ export default {
         },
         {
           sortable: false,
-          text: 'Reciever',
+          text: 'Receiver',
           value: 'receiver',
           align: 'left',
         },
@@ -146,7 +146,7 @@ export default {
         items_transactions:[],
         balance: '',
         sent: '',
-        recieved: '',
+        received: '',
         number_transactions: '',
         address: '',
         isLoading: true
@@ -163,16 +163,16 @@ export default {
         setSearch: 'SET_SEARCH_RESULT'
       }),
       setValues: function(address){
-        this.address = address.address
+        this.address = this.truncIfNeeded(address.address);
         this.balance = convertToCurrency(address.current_balance);
         this.sent = convertToCurrency(address.total_sent)
-        this.recieved = convertToCurrency(address.total_received);
-        this.number_transactions = address.number_of_transactions.toString();
+        this.received = convertToCurrency(address.total_received);
+        this.number_transactions = convertToFormattedInteger(address.number_of_transactions.toString());
         address.transactions.forEach((b) => {
             this.items_transactions.push({
                 date: new Date( b.transaction.created_at).toString().slice(3, 24),
-                sender: b.transaction.sender,
-                receiver: b.transaction.receiver,
+                sender: this.truncIfNeeded(b.transaction.sender),
+                receiver: this.truncIfNeeded(b.transaction.receiver),
                 amount: convertToCurrency(b.transaction.amount),
                 type: makeFirstCaseUpper(b.transaction_type)
             })
@@ -187,7 +187,10 @@ export default {
             let address = (await this.axios.get('get_address', {params:{address:this.$route.query.address}})).data;
             this.setValues(address);
         }
-      }
+      },
+      truncIfNeeded(string){
+        return (this.$vuetify.breakpoint.mobile)? truncate(string) : string;
+      },
     },
     async mounted () {
         let address;
