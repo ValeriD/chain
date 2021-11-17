@@ -84,12 +84,12 @@
             >
             <template v-slot:[`item.block_height`]="{ value }">
                 <div>
-                  {{ value | formatNumber }}
+                  <a>{{ value | formatNumber }}</a>
                 </div>
               </template>
             <template v-slot:[`item.block_hash`]="{ value }">
                 <div>
-                  {{ value | formatStringLength($vuetify.breakpoint.mobile) }}
+                  <a>{{ value | formatStringLength($vuetify.breakpoint.mobile) }}</a>
                 </div>
               </template>
             </v-data-table>

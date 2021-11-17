@@ -30,7 +30,7 @@
           >
               <template v-slot:[`item.address`]="{ value }">
                 <div>
-                  {{ value | formatStringLength($vuetify.breakpoint.mobile) }}
+                  <a>{{ value | formatStringLength($vuetify.breakpoint.mobile) }}</a>
                 </div>
               </template>
               <template v-slot:[`item.balance`]="{ value }">

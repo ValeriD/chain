@@ -12,6 +12,8 @@ import VueAxios from 'vue-axios'
 import Toast from "vue-toastification";
 import "vue-toastification/dist/index.css";
 import "./plugins/filters"
+import "./mixin/redirect"
+
 
 
 Vue.use(VueAxios, axios)

@@ -97,20 +97,21 @@
               <v-data-table
                 :headers='headers'
                 :items='items'
+                @click:row="handleRowClick"
               >
               <template v-slot:[`item.transaction_id`]="{ value }">
                 <div>
-                  {{ value | formatStringLength($vuetify.breakpoint.mobile) }}
+                  <a>{{ value | formatStringLength($vuetify.breakpoint.mobile) }}</a>
                 </div>
               </template>
               <template v-slot:[`item.receiver`]="{ value }">
                 <div>
-                  {{ value | formatStringLength($vuetify.breakpoint.mobile) }}
+                  <a @click.stop="handleRowClick" @click="handleColumnClick(value)">{{ value | formatStringLength($vuetify.breakpoint.mobile) }}</a>
                 </div>
               </template>
               <template v-slot:[`item.sender`]="{ value }">
                 <div>
-                  {{ value | formatStringLength($vuetify.breakpoint.mobile) }}
+                  <a @click.stop="handleRowClick" @click="handleColumnClick(value)">{{ value | formatStringLength($vuetify.breakpoint.mobile) }}</a>
                 </div>
               </template>
               <template v-slot:[`item.amount`]="{ value }">
@@ -211,6 +212,14 @@
               }
               this.setValues(block);
             },
+             handleRowClick(item, e){
+              if(e){
+              this.$router.push({ path:'/transactions/details', query:{transaction_id: item.transaction_id}})
+              }
+            },
+            handleColumnClick(address){
+              this.redirect('/addresses/details/', {address: address});
+            }
         },
         async mounted () {
             let block;
