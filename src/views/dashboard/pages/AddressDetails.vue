@@ -93,6 +93,7 @@
           <v-data-table
             :headers='headers_transactions'
             :items='items_transactions'
+            @click:row="handleRowClick"
             :footer-props="{
               'items-per-page-options': [5, 10, 25, 50, -1]
             }"
@@ -100,12 +101,12 @@
           >
               <template v-slot:[`item.receiver`]="{ value }">
                 <div>
-                  {{ value | formatStringLength($vuetify.breakpoint.mobile) }}
+                  <a @click.stop="handleRowClick" @click="handleColumnClick(value)">{{ value | formatStringLength($vuetify.breakpoint.mobile) }}</a>
                 </div>
               </template>
               <template v-slot:[`item.sender`]="{ value }">
                 <div>
-                  {{ value | formatStringLength($vuetify.breakpoint.mobile) }}
+                  <a @click.stop="handleRowClick" @click="handleColumnClick(value)">{{ value | formatStringLength($vuetify.breakpoint.mobile) }}</a>
                 </div>
               </template>
               <template v-slot:[`item.amount`]="{ value }">
@@ -185,7 +186,8 @@ export default {
         this.received = address.total_received;
         this.number_transactions = address.number_of_transactions.toString();
         address.transactions.forEach((b) => {
-            this.items_transactions.push({
+        this.items_transactions.push({
+                transaction_id: b.transaction.transaction_id,
                 date: new Date( b.transaction.created_at).toString().slice(3, 24),
                 sender: b.transaction.sender,
                 receiver: b.transaction.receiver,
@@ -204,6 +206,14 @@ export default {
             this.setValues(address);
         }
       },
+      handleRowClick(item, e){
+        if(e){
+         this.$router.push({ path:'/transactions/details', query:{transaction_id: item.transaction_id}})
+        }
+      },
+      handleColumnClick(address){
+        this.redirect('/addresses/details/', {address: address});
+      }
     },
     async mounted () {
         let address;

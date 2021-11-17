@@ -99,7 +99,7 @@
       }),
       async handleClick (item, e) {
         if(e){
-         //this.$router.push({ path:'/transactions/details', query:{transaction_id: e.transaction_id}})
+         this.$router.push({ path:'/transactions/details', query:{transaction_id: item.transaction_id}})
         }
       },
       handleColumnClick(address){
