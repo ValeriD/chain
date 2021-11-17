@@ -41,7 +41,6 @@
       </template>
 
       <template
-        v-if="$vuetify.breakpoint.mdAndUp"
         v-slot:append-outer
       >
         <v-btn
@@ -97,15 +96,6 @@
         setDrawer: 'SET_DRAWER',
         setSearch: 'SET_SEARCH_RESULT'
       }),
-      redirect(path, query){
-        console.log(query);
-        if(this.$router.currentRoute.path === path){
-          this.$router.replace({path: path, query: query});
-        }else{
-          this.$router.push({path: path, query: query});
-        }
-        this.search = '';
-      },
       async searchAction () {
         if(this.search!==''){
           this.isLoading = true;
