@@ -30,12 +30,12 @@
             >
                <template v-slot:[`item.sender`]="{ value }">
                 <div>
-                  {{ value | formatStringLength($vuetify.breakpoint.mobile) }}
+                   <a @click.stop="handleClick" @click="handleColumnClick(value)">{{ value | formatStringLength($vuetify.breakpoint.mobile) }}</a>
                 </div>
               </template>
-               <template v-slot:[`item.receiver`]="{ value }">
-                <div>
-                  {{ value | formatStringLength($vuetify.breakpoint.mobile) }}
+               <template v-slot:[`item.receiver`]="{ value }" >
+                <div >
+                  <a @click.stop="handleClick" @click="handleColumnClick(value)">{{ value | formatStringLength($vuetify.breakpoint.mobile) }}</a>
                 </div>
               </template>
               <template v-slot:[`item.amount`]="{ value }">
@@ -97,9 +97,14 @@
       ...mapMutations({
         setSearch: 'SET_SEARCH_RESULT'
       }),
-      async handleClick (e) {
-        this.$router.push({ path:'/transactions/details', query:{transaction_id: e.transaction_id}})
+      async handleClick (item, e) {
+        if(e){
+         //this.$router.push({ path:'/transactions/details', query:{transaction_id: e.transaction_id}})
+        }
       },
+      handleColumnClick(address){
+        this.redirect('/addresses/details/', {address: address});
+      }
       
     },
     async mounted () {
@@ -134,4 +139,8 @@
   margin-left: 20px;
   width: 260px;
 }
+
+</style>
+<style lang="sass">
+
 </style>
