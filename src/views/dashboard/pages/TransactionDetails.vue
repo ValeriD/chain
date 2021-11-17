@@ -9,7 +9,7 @@
   <LoadingScreen v-if="isLoading"/>
 
   <!-- Screen when data loaded -->
-  <v-row v-if="!isLoading">
+  <template v-if="!isLoading">
     <v-row>
         <v-chip
         color="orange"
@@ -18,7 +18,7 @@
         text-color="white"
         align="left"
         >
-        <div class="font-weight-regular display-1">Transaction ID: {{ transaction_id }}</div>
+        <div class="font-weight-regular display-1">Transaction ID: {{ transaction_id | formatStringLength($vuetify.breakpoint.mobile) }}</div>
         </v-chip>
     </v-row>
     <v-row
@@ -35,7 +35,7 @@
                 color='purple'
                 icon='mdi-arrange-send-to-back'
                 title='Confirmation block'
-                :value='confirmation_block'
+                :value='confirmation_block | formatNumber'
                 />
             </v-col>
 
@@ -62,7 +62,7 @@
                 color='#2CEEF0'
                 icon='mdi-cached'
                 title='TX Amount'
-                :value='transaction_amount'
+                :value='transaction_amount | formatCurrency'
                 />
             </v-col>
 
@@ -75,7 +75,7 @@
                 color='green'
                 icon='mdi-check-circle-outline'
                 title='Confirmations'
-                :value='confirmations'
+                :value='confirmations | formatNumber'
                 />
             </v-col>
 
@@ -86,7 +86,7 @@
             </v-col>
             </v-row>
             <v-col
-                cols='6'
+                cols='12'
                 md='6'
             >
                 <base-material-card
@@ -100,12 +100,23 @@
                     :headers='headers_input'
                     :items='items_input'
                     :items-per-page="5"
-                    />
+                    >
+                    <template v-slot:[`item.input_hash`]="{ value }">
+                        <div>
+                        {{ value | formatStringLength($vuetify.breakpoint.mobile) }}
+                        </div>
+                    </template>
+                    <template v-slot:[`item.amount`]="{ value }">
+                        <div>
+                        {{ value | formatCurrency }}
+                        </div>
+                    </template>
+                    </v-data-table>
                 </v-card-text>
                 </base-material-card>
             </v-col>
             <v-col
-                cols='6'
+                cols='12'
                 md='6'
             >
                 <base-material-card
@@ -119,12 +130,23 @@
                     :headers='headers_output'
                     :items='items_output'
                     :items-per-page="5"
-                    />
+                    >
+                    <template v-slot:[`item.output_hash`]="{ value }">
+                        <div>
+                        {{ value | formatStringLength($vuetify.breakpoint.mobile) }}
+                        </div>
+                    </template>
+                    <template v-slot:[`item.amount`]="{ value }">
+                        <div>
+                        {{ value | formatCurrency }}
+                        </div>
+                    </template>
+                    </v-data-table>
                 </v-card-text>
                 </base-material-card>
             </v-col>
         </v-row>
-  </v-row>
+  </template>
     </v-container>
 </template>
 
@@ -132,7 +154,6 @@
     import LoadingScreen from '../components/Loading'
 
     import { mapState, mapMutations} from 'vuex'
-    import { convertToCurrency } from "../../../scripts/functions"  
     export default {
         name: 'TransactionDetails',
         components: {
@@ -200,24 +221,24 @@
             setValues: function(transaction){
                 this.transaction_id = transaction.transaction_id
                 this.confirmation_block = transaction.confirmation_block.toString();
-                this.transaction_amount = convertToCurrency(transaction.amount)
+                this.transaction_amount = transaction.amount
                 this.date_time = new Date(transaction.created_at).toString().slice(3, 24)
                 this.confirmations = transaction.confirmations_number.toString()
                 if(transaction.input){
                     this.items_input.push({
                         input_hash: transaction.input.puzzle_hash,
-                        amount: convertToCurrency(transaction.input.amount)
+                        amount: transaction.input.amount
                     })
                 }
                 if(transaction.output){
                     transaction.outputs.forEach((output, index) => {
                         this.items_output.push({
                             output_hash: output.address,
-                            amount: convertToCurrency(output.amount)
+                            amount: output.amount
                         })
                     }) 
                 }
-            }
+            },
         },
         async mounted () {
             let transaction;

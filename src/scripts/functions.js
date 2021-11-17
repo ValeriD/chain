@@ -25,8 +25,8 @@ export function convertSpace(space){
 }
 
 export function truncate(string){
-    let str_beg = string.substr(0,15);
-    let str_end = string.substr(-10);
+        let str_beg = string.substr(0,15);
+        let str_end = string.substr(-10);
 
-    return str_beg + "..." + str_end;
+        return str_beg + "..." + str_end;
 }

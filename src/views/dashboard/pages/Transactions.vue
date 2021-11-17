@@ -8,7 +8,7 @@
   <LoadingScreen v-if="isLoading"/>
 
   <!-- Screen when data loaded -->
-  <v-row v-if="!isLoading">
+  <template v-if="!isLoading">
     <v-row
       align='center'
       justify='center'
@@ -27,12 +27,28 @@
               :headers='headers'
               :items='items'
               @click:row="handleClick"
-            />
+            >
+               <template v-slot:[`item.sender`]="{ value }">
+                <div>
+                  {{ value | formatStringLength($vuetify.breakpoint.mobile) }}
+                </div>
+              </template>
+               <template v-slot:[`item.receiver`]="{ value }">
+                <div>
+                  {{ value | formatStringLength($vuetify.breakpoint.mobile) }}
+                </div>
+              </template>
+              <template v-slot:[`item.amount`]="{ value }">
+                <div>
+                  {{ value | formatCurrency }}
+                </div>
+              </template>
+            </v-data-table>
           </v-card-text>
         </base-material-card>
       </v-col>
     </v-row>
-  </v-row>
+  </template>
   </v-container>
 </template>
 
@@ -40,7 +56,6 @@
   import LoadingScreen from '../components/Loading'
 
   import { mapState, mapMutations } from 'vuex'
-  import { convertToCurrency } from '../../../scripts/functions.js'
 
   export default {
     components: {
@@ -61,8 +76,8 @@
         },
         {
           sortable: false,
-          text: 'Reciever',
-          value: 'reciever',
+          text: 'Receiver',
+          value: 'receiver',
           align: 'left',
         },
         {
@@ -85,6 +100,7 @@
       async handleClick (e) {
         this.$router.push({ path:'/transactions/details', query:{transaction_id: e.transaction_id}})
       },
+      
     },
     async mounted () {
       this.isLoading = true;
@@ -95,8 +111,8 @@
                   transaction_id: b.transaction_id,
                   date: new Date( b.created_at).toString().slice(3, 24),
                   sender: b.sender,
-                  reciever: b.receiver,
-                  amount: convertToCurrency(b.amount),
+                  receiver: b.receiver,
+                  amount: b.amount,
                 })
               })
               this.isLoading = false;

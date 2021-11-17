@@ -17,7 +17,7 @@
           text-color="white"
           align="left"
           >
-          <div class="font-weight-regular display-1">Block Hash: {{ block_hash }}</div>
+          <div class="font-weight-regular display-1">Block Hash: {{ block_hash | formatStringLength($vuetify.breakpoint.mobile) }}</div>
           </v-chip>
     </v-row>
     <v-row>
@@ -30,7 +30,7 @@
             color='green'
             icon='mdi-arrange-send-to-back'
             title='Block height'
-            :value='block_height'
+            :value='block_height | formatNumber'
           />
         </v-col>
 
@@ -57,7 +57,7 @@
             color='green'
             icon='mdi-circle-multiple-outline'
             title='TX Amount'
-            :value='transactions_amount'
+            :value='transactions_amount | formatCurrency'
           />
         </v-col>
 
@@ -70,7 +70,7 @@
             color='purple'
             icon='mdi-cached'
             title='Number of transactions'
-            :value='number_of_transactions'
+            :value='number_of_transactions | formatNumber'
           />
         </v-col>
 
@@ -97,7 +97,28 @@
               <v-data-table
                 :headers='headers'
                 :items='items'
-              />
+              >
+              <template v-slot:[`item.transaction_id`]="{ value }">
+                <div>
+                  {{ value | formatStringLength($vuetify.breakpoint.mobile) }}
+                </div>
+              </template>
+              <template v-slot:[`item.receiver`]="{ value }">
+                <div>
+                  {{ value | formatStringLength($vuetify.breakpoint.mobile) }}
+                </div>
+              </template>
+              <template v-slot:[`item.sender`]="{ value }">
+                <div>
+                  {{ value | formatStringLength($vuetify.breakpoint.mobile) }}
+                </div>
+              </template>
+              <template v-slot:[`item.amount`]="{ value }">
+                <div>
+                  {{ value | formatCurrency }}
+                </div>
+              </template>
+              </v-data-table>
             </v-card-text>
           </base-material-card>
         </v-col>
@@ -109,7 +130,6 @@
 <script>
     import LoadingScreen from '../components/Loading'
 
-    import { convertToCurrency, convertToFormattedInteger,truncate } from '../../../scripts/functions.js'
     import { mapState, mapMutations } from 'vuex'
 
     export default {
@@ -163,21 +183,21 @@
             }),
             setValues: function(block){
               this.block_hash = this.$route.query.block_hash
-              this.block_height = convertToFormattedInteger(block.reward_chain_block.height).toString()
+              this.block_height = block.reward_chain_block.height.toString()
               this.date_time = block.foliage_transaction_block? new Date(block.foliage_transaction_block.timestamp*1000).toString().slice(3, 24) : "No time info";
-              this.transactions_amount = block.foliage_transaction_block? convertToCurrency(block.transactions_info.amount) : "0";
+              this.transactions_amount = block.foliage_transaction_block? block.transactions_info.amount : "0";
               if(block.foliage_transaction_block){
                 //TODO add more fields to handle click
                 block.transactions_info.transactions.forEach(t => {
                   this.items.push({
-                    transaction_id: this.truncIfNeeded(t.transaction_id),
+                    transaction_id: t.transaction_id,
                     date: new Date( t.created_at).toString().slice(3, 24),
-                    sender: this.truncIfNeeded(t.sender),
-                    receiver: this.truncIfNeeded(t.receiver),
-                    amount: convertToCurrency(t.amount),
+                    sender: t.sender,
+                    receiver: t.receiver,
+                    amount: t.amount.toString(),
                   })
                 })
-                this.number_of_transactions = convertToFormattedInteger(this.items.length).toString()
+                this.number_of_transactions = this.items.length.toString()
               }else{
                 this.number_of_transactions = '0';
               }
@@ -190,9 +210,6 @@
                 block = (await this.axios.get('get_block', {params: {hash: this.$route.query.block_hash}})).data.block
               }
               this.setValues(block);
-            },
-            truncIfNeeded(string){
-              return (this.$vuetify.breakpoint.mobile)? truncate(string) : string;
             },
         },
         async mounted () {

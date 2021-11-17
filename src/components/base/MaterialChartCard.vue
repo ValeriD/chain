@@ -76,7 +76,7 @@
 
       .ct-label
         color: inherit
-        opacity: .7
+        opacity: 1
         font-size: 0.975rem
         font-weight: 100
 

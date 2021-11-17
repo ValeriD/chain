@@ -8,7 +8,7 @@
   <LoadingScreen v-if="isLoading"/>
 
   <!-- Screen when data loaded -->
-  <v-row v-if="!isLoading">
+  <template v-if="!isLoading">
     <v-col>
       <v-col
         class='pb-10'
@@ -95,7 +95,7 @@
         </base-material-chart-card>
       </v-col>
     </v-col>
-  </v-row>
+  </template>
   </v-container>
 </template>
 
@@ -203,8 +203,9 @@
       getChartData: async function (req){
           const res = await this.axios.get(req);
           // Calculating the step for the dots
+          const number_of_points = (this.$vuetify.breakpoint.mobile)? 7:15;
           const records = [];
-          const step = (res.data.length<15)? 1 : Math.ceil(res.data.length/30);
+          const step = (res.data.length<number_of_points)? 1 : Math.ceil(res.data.length/number_of_points);
          
           // Filtering the data
           for(var i = 0, j=0; i<res.data.length; j++, i+=step){

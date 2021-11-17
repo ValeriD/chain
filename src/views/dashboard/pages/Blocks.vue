@@ -19,7 +19,7 @@
           color='primary'
           icon='mdi-arrange-send-to-back'
           title='Last block'
-          :value='lastBlock'
+          :value='lastBlock | formatNumber'
         />
       </v-col>
 
@@ -32,7 +32,7 @@
           color='info'
           icon='mdi-harddisk'
           title='Netspace'
-          :value='space'
+          :value='space | formatSpace'
         />
       </v-col>
 
@@ -45,7 +45,7 @@
           color='#ff1744'
           icon='mdi-circle-multiple-outline'
           title='Circulating supply'
-          :value='circulatingSupply'
+          :value='circulatingSupply | formatCurrency'
         />
       </v-col>
 
@@ -58,7 +58,7 @@
           color='orange'
           icon='mdi-account-multiple-outline'
           title='Unique address count'
-          :value='uniqueAddressCount'
+          :value='uniqueAddressCount | formatNumber'
         />
       </v-col>
 
@@ -81,7 +81,18 @@
             @click:row="handleClick"
             :items-per-page="10"
             :breakpoint=0
-            />
+            >
+            <template v-slot:[`item.block_height`]="{ value }">
+                <div>
+                  {{ value | formatNumber }}
+                </div>
+              </template>
+            <template v-slot:[`item.block_hash`]="{ value }">
+                <div>
+                  {{ value | formatStringLength($vuetify.breakpoint.mobile) }}
+                </div>
+              </template>
+            </v-data-table>
           </v-card-text>
         </base-material-card>
       </v-col>
@@ -92,8 +103,6 @@
 
 <script>
   import LoadingScreen from '../components/Loading'
-
-  import { convertToCurrency,convertSpace, truncate } from '../../../scripts/functions.js'
 
 export default {
     name: 'Blocks',
@@ -113,7 +122,7 @@ export default {
           {
             sortable: false,
             text: 'Block Hash',
-            value: 'displayed_block_hash',
+            value: 'block_hash',
             align: 'right',
           },
           {
@@ -163,29 +172,25 @@ export default {
       handleClick(e){
         this.$router.push({path:'/blocks/details', query: { block_hash: e.block_hash }})
       },
-      truncIfNeeded(string){
-        return (this.$vuetify.breakpoint.mobile)? truncate(string) : string;
-      },
     },
 
     async mounted () {
       const blockchain_state = await this.axios.get('get_blockchain_state') // blockchain state
       const blocks = await this.axios.get('get_blocks', { params: { start_height: blockchain_state.data.blockchain_state.peak.height-19, end_height: blockchain_state.data.blockchain_state.peak.height+1 } }) // blocks
       // table data filled
-      blocks.data.blocks.forEach((b, index) => {
+      blocks.data.blocks.forEach((b) => {
         this.items.push({
-          block_height: new Intl.NumberFormat().format(b.reward_chain_block.height),
-          displayed_block_hash: this.truncIfNeeded(b.header_hash),
+          block_height: b.reward_chain_block.height,
           block_hash: b.header_hash,
           time: b.foliage_transaction_block ? new Date(b.foliage_transaction_block?.timestamp*1000).toString().slice(3, 24) : 'No time info',
           number_of_transactions: b.transactions_info?.reward_claims_incorporated.length || '0',
         })
       })
       this.items.reverse();
-      this.height = new Intl.NumberFormat().format(blockchain_state.data.blockchain_state.peak.height)
-      this.space = convertSpace(blockchain_state.data.blockchain_state.space)
-      this.circulatingSupply = convertToCurrency(blockchain_state.data.blockchain_state.circulating_supply)
-      this.uniqueAddressCount = new Intl.NumberFormat().format(blockchain_state.data.blockchain_state.unique_address_count)
+      this.height = blockchain_state.data.blockchain_state.peak.height
+      this.space = blockchain_state.data.blockchain_state.space
+      this.circulatingSupply = blockchain_state.data.blockchain_state.circulating_supply
+      this.uniqueAddressCount = blockchain_state.data.blockchain_state.unique_address_count
       this.isLoading = false;
     },
   }

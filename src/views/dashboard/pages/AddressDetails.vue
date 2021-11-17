@@ -17,7 +17,7 @@
         large
         align="left"
         >
-        <div class="font-weight-regular display-1">Address: {{ address }}</div>
+        <div class="font-weight-regular display-1">Address: {{ address | formatStringLength($vuetify.breakpoint.mobile) }}</div>
         </v-chip>
     </v-row>
       <v-row>
@@ -30,7 +30,7 @@
             color='info'
             icon='mdi-scale-balance'
             title='Current balance'
-            :value='balance'
+            :value='balance | formatCurrency'
             />
         </v-col>
 
@@ -43,7 +43,7 @@
             color='#ff1744'
             icon='mdi-archive-arrow-up-outline'
             title='Total sent'
-            :value='sent'
+            :value='sent | formatCurrency'
             />
         </v-col>
 
@@ -56,7 +56,7 @@
             color='primary'
             icon='mdi-archive-arrow-down-outline'
             title='Total received'
-            :value='received'
+            :value='received | formatCurrency'
             />
         </v-col>
 
@@ -69,7 +69,7 @@
             color='purple'
             icon='mdi-cached'
             title='Number of transactions'
-            :value='number_transactions'
+            :value='number_transactions | formatNumber'
             />
         </v-col>
 
@@ -97,7 +97,23 @@
               'items-per-page-options': [5, 10, 25, 50, -1]
             }"
             :items-per-page="25"
-          />
+          >
+              <template v-slot:[`item.receiver`]="{ value }">
+                <div>
+                  {{ value | formatStringLength($vuetify.breakpoint.mobile) }}
+                </div>
+              </template>
+              <template v-slot:[`item.sender`]="{ value }">
+                <div>
+                  {{ value | formatStringLength($vuetify.breakpoint.mobile) }}
+                </div>
+              </template>
+              <template v-slot:[`item.amount`]="{ value }">
+                <div>
+                  {{ value | formatCurrency }}
+                </div>
+              </template>
+          </v-data-table>
         </v-card-text>
       </base-material-card>
     </v-col>
@@ -107,7 +123,7 @@
 <script>
     import LoadingScreen from '../components/Loading'
     import { mapState, mapMutations} from 'vuex'
-    import { convertToCurrency, makeFirstCaseUpper, truncate, convertToFormattedInteger } from "../../../scripts/functions"
+    import { makeFirstCaseUpper } from "../../../scripts/functions"
 export default {
     components:{
       LoadingScreen
@@ -163,17 +179,17 @@ export default {
         setSearch: 'SET_SEARCH_RESULT'
       }),
       setValues: function(address){
-        this.address = this.truncIfNeeded(address.address);
-        this.balance = convertToCurrency(address.current_balance);
-        this.sent = convertToCurrency(address.total_sent)
-        this.received = convertToCurrency(address.total_received);
-        this.number_transactions = convertToFormattedInteger(address.number_of_transactions.toString());
+        this.address = address.address;
+        this.balance = address.current_balance;
+        this.sent = address.total_sent
+        this.received = address.total_received;
+        this.number_transactions = address.number_of_transactions.toString();
         address.transactions.forEach((b) => {
             this.items_transactions.push({
                 date: new Date( b.transaction.created_at).toString().slice(3, 24),
-                sender: this.truncIfNeeded(b.transaction.sender),
-                receiver: this.truncIfNeeded(b.transaction.receiver),
-                amount: convertToCurrency(b.transaction.amount),
+                sender: b.transaction.sender,
+                receiver: b.transaction.receiver,
+                amount: b.transaction.amount,
                 type: makeFirstCaseUpper(b.transaction_type)
             })
         })
@@ -187,9 +203,6 @@ export default {
             let address = (await this.axios.get('get_address', {params:{address:this.$route.query.address}})).data;
             this.setValues(address);
         }
-      },
-      truncIfNeeded(string){
-        return (this.$vuetify.breakpoint.mobile)? truncate(string) : string;
       },
     },
     async mounted () {

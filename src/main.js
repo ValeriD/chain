@@ -11,6 +11,8 @@ import axios from 'axios'
 import VueAxios from 'vue-axios'
 import Toast from "vue-toastification";
 import "vue-toastification/dist/index.css";
+import "./plugins/filters"
+
 
 Vue.use(VueAxios, axios)
 axios.defaults.baseURL = process.env.VUE_APP_BASEURL

@@ -27,7 +27,18 @@
             }"
             @click:row="handleClick"
             :items-per-page="25"
-          />
+          >
+              <template v-slot:[`item.address`]="{ value }">
+                <div>
+                  {{ value | formatStringLength($vuetify.breakpoint.mobile) }}
+                </div>
+              </template>
+              <template v-slot:[`item.balance`]="{ value }">
+                <div>
+                  {{ value | formatCurrency }}
+                </div>
+              </template>
+          </v-data-table>
         </v-card-text>
       </base-material-card>
     </v-col>
@@ -38,7 +49,6 @@
     import LoadingScreen from '../components/Loading'
 
     import { mapState, mapMutations } from 'vuex'
-    import { convertToCurrency, truncate } from '../../../scripts/functions.js'
   
 
 export default {
@@ -54,7 +64,7 @@ export default {
           {
             sortable: false,
             text: 'Address',
-            value: 'displayed_address',
+            value: 'address',
           },
           {
             sortable: false,
@@ -78,17 +88,13 @@ export default {
       async handleClick (e) {
           this.$router.push({ path:'/addresses/details', query: { address: e.address}})
       },
-      truncIfNeeded(string){
-        return (this.$vuetify.breakpoint.mobile)? truncate(string) : string;
-      },
     },
     async mounted () {
       const addresses = await this.axios.get('get_addresses', { params: { offset: 0 } }) // addresses
-      addresses.data.forEach((b, index) => {
+      addresses.data.forEach((b) => {
         this.items.push({
-          displayed_address: this.truncIfNeeded(b.address),
           address: b.address,
-          balance: convertToCurrency(b.current_balance),
+          balance: b.current_balance,
         })
       })
       this.isLoading= false;
